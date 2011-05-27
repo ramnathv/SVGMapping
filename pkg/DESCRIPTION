@@ -1,0 +1,11 @@
+Package: SVGMapping
+Type: Package
+Title: Map experiment data on user-provided SVG file
+Version: 1.0
+Date: 2011-05-12
+Author: Jean-Christophe AUDE, Raphael CHAMPEIMONT
+Maintainer: Jean-Christophe AUDE <jean-christophe.aude@cea.fr>
+Description: This package allows you to display experiment data on a custom-made SVG image. For example, you can to create an image showing a cellular mechanism with the relevant genes displayed as circles, and use this package to color them according to their expression in a microarray experiment. Other features based on the same idea are also provided, like drawing pie charts showing several conditions and a javascript-based window showing gene (or whatever else you display) description.
+License: CeCILL-B
+LazyLoad: yes
+Depends: XML
