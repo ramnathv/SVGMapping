@@ -7,7 +7,7 @@ It computes a vector of colors from a vector of microarray expression values.
 The defaults parameters are designed with two-color microarray log-ratios in mind.
 }
 \usage{
-myexprcolors <- computeExprColors(X, col=microarrayColors, NA.color="#999999", a=-2, b=2)
+computeExprColors(X, col=microarrayColors, NA.color="#999999", a=-2, b=2)
 }
 \arguments{
 \item{X}{The (numeric) vector of expression values.}

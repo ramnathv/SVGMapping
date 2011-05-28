@@ -9,7 +9,7 @@
 setStyleSVG(node, style.parameter, style.value)
 }
 \arguments{
-\item{svg}{The SVG node of which you want to modify a style parameter. Modified in place.}
+\item{node}{The SVG node of which you want to modify a style parameter. Modified in place.}
 \item{style.parameter}{The style parameter to modify/create ("fill" for example)}
 \item{style.value}{The value to set the style parameter to ("#FF0000" for example)}
 }

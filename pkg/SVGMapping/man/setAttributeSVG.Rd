@@ -11,7 +11,7 @@
 setAttributeSVG(node, attname, attval)
 }
 \arguments{
-\item{svg}{The SVG node of which you want to modify an attribute. Modified in place.}
+\item{node}{The SVG node of which you want to modify an attribute. Modified in place.}
 \item{attname}{The attribute name to modify/create}
 \item{attval}{The value to set the attribute to}
 }

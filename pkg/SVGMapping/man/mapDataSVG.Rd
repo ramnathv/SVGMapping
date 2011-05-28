@@ -17,7 +17,7 @@ mapDataSVG(svg, numData, tooltipData=numData,
            mode="fill", what="*",
            geneAttribute="inkscape:label",
            col=microarrayColors, NA.color="#999999", colrange=c(-2,2),
-           annotation=NULL, partialFillAngle=NULL)
+           annotation=NULL, fillAngle=NULL)
 }
 \arguments{
 \item{svg}{SVG data (an \code{XMLInternalDocument}). The variable will be modified in place.}
@@ -53,10 +53,10 @@ because we need to compute a color for background in the tooltip window.}
 \item{what}{The type of SVG nodes to apply the data to, for example "svg:path". By default any type of SVG element.}
 \item{geneAttribute}{The SVG attribute that tells which gene the element is, or in a general way which row name in \code{numData}.}
 \item{col}{A vector of colors (as characters) to use in coloring modes ("fill", "stroke", "pie" and "tooltip-only"). Color format is #RRGGBB}
-\item{NA.Color}{The color to use for NA values}
+\item{NA.color}{The color to use for NA values}
 \item{colrange}{The range of values to map uniformly to the list of colors}
 \item{annotation}{A function that, when given an gene (ie. a row name in numData) returns a list with fields \code{name} and \code{description} that are used for the tooltip window. Alternatively, you can give a matrix with genes as row names and a \code{name} and \code{description} column that work as just explained. There is also an optional \code{url} field that, if present, is the URL to go to when the SVG object is cliked.}
-\item{partialFillAngle}{Only used in "partial-fill" and multi-experiment "fill" modes to choose the filling angle.
+\item{fillAngle}{Only used in "partial-fill" and multi-experiment "fill" modes to choose the filling angle.
 In "partial-fill" the default is -pi/2 (vertical going up) and in "fill" it is 0 (horizontal going right).}
 }
 \note{
