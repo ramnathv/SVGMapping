@@ -15,7 +15,7 @@ loadSVG(file)
 An \code{XMLInternalDocument}.
 }
 \examples{
-mysvg <- loadSVG("myfile.svg")
+mysvg <- loadSVG(system.file("extdata/example.svg", package="SVGMapping"))
 }
 \keyword{misc}
 \seealso{
