@@ -4,4 +4,4 @@
 \description{
 A uniform color gradient with (dark green, green, white, red, dark red), with 1000 values.
 }
-\keyword{misc}
+\keyword{color}

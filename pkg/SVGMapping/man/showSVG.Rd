@@ -13,4 +13,8 @@ showSVG(svg, browser=getOption("browser"))
 \item{svg}{SVG data (an \code{XMLInternalDocument})}
 \item{browser}{This argument is passed to \code{\link{browseURL}}.}
 }
+\examples{
+mysvg <- loadSVG(system.file("extdata/example2.svg", package="SVGMapping"))
+\donttest{showSVG(mysvg)}
+}
 \keyword{misc}
