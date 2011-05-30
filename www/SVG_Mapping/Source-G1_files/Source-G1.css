@@ -1,13 +1,14 @@
 .paragraph_style {
+    background: rgb(235, 235, 235);
     color: rgb(0, 0, 0);
     font-family: 'Monaco', 'Courier', serif;
-    font-size: 12px;
+    font-size: 13px;
     font-stretch: normal;
     font-style: normal;
     font-variant: normal;
     font-weight: 400;
     letter-spacing: 0;
-    line-height: 16px;
+    line-height: 17px;
     margin-bottom: 0px;
     margin-left: 0px;
     margin-right: 0px;
@@ -21,15 +22,16 @@
     text-transform: none;
 }
 .paragraph_style_1 {
+    background: rgb(235, 235, 235);
     color: rgb(132, 21, 85);
     font-family: 'Monaco', 'Courier', serif;
-    font-size: 12px;
+    font-size: 13px;
     font-stretch: normal;
     font-style: normal;
     font-variant: normal;
     font-weight: 400;
     letter-spacing: 0;
-    line-height: 16px;
+    line-height: 17px;
     margin-bottom: 0px;
     margin-left: 0px;
     margin-right: 0px;
@@ -44,7 +46,7 @@
 }
 .style {
     color: rgb(4, 55, 255);
-    line-height: 16px;
+    line-height: 17px;
     opacity: 1.00;
 }
 .style_SkipStroke_2 {
@@ -147,7 +149,7 @@
 .graphic_textbox_layout_style_default {
     padding: 4px;
 }
-.graphic_textbox_layout_style_default_External_542_279 {
+.graphic_textbox_layout_style_default_External_660_296 {
     position: relative;
 }
 .graphic_textbox_style_default_SkipStroke {

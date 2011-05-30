@@ -1,43 +1,19 @@
 .paragraph_style {
-    background: rgb(235, 235, 235);
-    color: rgb(0, 0, 0);
-    font-family: 'Monaco', 'Courier', serif;
-    font-size: 13px;
+    color: rgb(81, 81, 81);
+    font-family: 'HelveticaNeue', 'Helvetica Neue', 'Arial', sans-serif;
+    font-size: 12px;
     font-stretch: normal;
     font-style: normal;
     font-variant: normal;
     font-weight: 400;
     letter-spacing: 0;
-    line-height: 17px;
+    line-height: 14px;
     margin-bottom: 0px;
     margin-left: 0px;
     margin-right: 0px;
     margin-top: 0px;
     opacity: 1.00;
-    padding-bottom: 0px;
-    padding-top: 0px;
-    text-align: left;
-    text-decoration: none;
-    text-indent: 0px;
-    text-transform: none;
-}
-.paragraph_style_1 {
-    background: rgb(235, 235, 235);
-    color: rgb(132, 21, 85);
-    font-family: 'Monaco', 'Courier', serif;
-    font-size: 13px;
-    font-stretch: normal;
-    font-style: normal;
-    font-variant: normal;
-    font-weight: 400;
-    letter-spacing: 0;
-    line-height: 17px;
-    margin-bottom: 0px;
-    margin-left: 0px;
-    margin-right: 0px;
-    margin-top: 0px;
-    opacity: 1.00;
-    padding-bottom: 0px;
+    padding-bottom: 18px;
     padding-top: 0px;
     text-align: left;
     text-decoration: none;
@@ -45,14 +21,30 @@
     text-transform: none;
 }
 .style {
-    color: rgb(4, 55, 255);
-    line-height: 17px;
-    opacity: 1.00;
+    font-family: 'HelveticaNeue-Medium', 'Helvetica Neue';
+    font-size: 12px;
+    font-stretch: normal;
+    font-style: normal;
+    font-weight: 500;
+    line-height: 15px;
 }
 .style_1 {
-    color: rgb(132, 21, 85);
-    line-height: 17px;
+    color: rgb(18, 122, 217);
+    font-family: 'Courier', serif;
+    font-size: 12px;
+    font-stretch: normal;
+    font-style: normal;
+    font-weight: 400;
+    line-height: 14px;
     opacity: 1.00;
+}
+.style_2 {
+    font-family: 'Courier', serif;
+    font-size: 12px;
+    font-stretch: normal;
+    font-style: normal;
+    font-weight: 400;
+    line-height: 14px;
 }
 .style_SkipStroke_2 {
     background: transparent;
@@ -65,8 +57,6 @@
 .style_SkipStroke_1 {
     background: transparent;
     opacity: 1.00;
-}
-.Aucun {
 }
 .Free_Form {
     color: rgb(81, 81, 81);
@@ -151,28 +141,31 @@
     background: transparent;
     opacity: 1.00;
 }
+.graphic_textbox_layout_style_default_External_660_196 {
+    position: relative;
+}
 .graphic_textbox_layout_style_default {
     padding: 4px;
 }
-.graphic_textbox_layout_style_default_External_660_585 {
+.graphic_textbox_layout_style_default_External_660_142 {
     position: relative;
 }
 .graphic_textbox_style_default_SkipStroke {
     background: transparent;
     opacity: 1.00;
 }
-a {
-    color: rgb(183, 97, 78);
-    text-decoration: none;
-}
-a:visited {
-    color: rgb(66, 66, 66);
-    text-decoration: none;
-}
-a:hover {
-    color: rgb(224, 133, 102);
-    text-decoration: underline;
-}
+ol  { 
+      padding:0;
+      margin:0;
+      text-indent:0;
+      list-style-type:none ;
+      list-style-image:none
+    }
+.Bullet { 
+          text-decoration:none ;
+          text-transform:none ;
+          border: none;          
+        }
 .bumper {
     font-size: 1px;
     line-height: 1px;
