@@ -6,6 +6,6 @@ Date: 2011-05-12
 Author: Jean-Christophe AUDE, Raphael CHAMPEIMONT
 Maintainer: Jean-Christophe AUDE <jean-christophe.aude@cea.fr>
 Description: This package allows you to display experimental data on a custom-made SVG image.
-License: file LICENSE
+License: BSD
 LazyLoad: yes
 Depends: R (>= 2.10.0), XML, utils
