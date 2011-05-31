@@ -2,7 +2,7 @@
 <feed xmlns="http://www.w3.org/2005/Atom">
  <id>urn:iweb:B945B68A-0017-473C-AFE8-DA554A359BF0</id>
  <title>Page list Atom feed</title>
- <updated>2011-05-30T17:43:30+02:00</updated>
+ <updated>2011-05-31T09:03:52+02:00</updated>
  <link rel="self" href="feed.xml"/>
  <generator>iWeb</generator>
  <author>
@@ -14,8 +14,17 @@
   <title xmlns="urn:iweb:">Home</title>
   <in-navbar xmlns="urn:iweb:">CF01906F-982D-459B-A826-B22A75740E99</in-navbar>
   <link rel="alternate" href="Home.html"/>
-  <updated>2011-05-30T17:43:30.001+02:00</updated>
+  <updated>2011-05-31T09:03:52.001+02:00</updated>
   <content>Home</content>
+ </entry>
+ <entry>
+  <id>urn:iweb:A9DF2437-3D06-4FD7-88F5-B5AD9EA8D3E6</id>
+  <title>Installation</title>
+  <title xmlns="urn:iweb:">Installation</title>
+  <in-navbar xmlns="urn:iweb:">A9DF2437-3D06-4FD7-88F5-B5AD9EA8D3E6</in-navbar>
+  <link rel="alternate" href="Installation.html"/>
+  <updated>2011-05-31T09:03:52.002+02:00</updated>
+  <content>Installation</content>
  </entry>
  <entry>
   <id>urn:iweb:C777499E-91F1-4D09-99A4-C73FDDA375F9</id>
@@ -23,7 +32,7 @@
   <title xmlns="urn:iweb:">Tutorial</title>
   <in-navbar xmlns="urn:iweb:">C777499E-91F1-4D09-99A4-C73FDDA375F9</in-navbar>
   <link rel="alternate" href="Tutorial.html"/>
-  <updated>2011-05-30T17:43:30.002+02:00</updated>
+  <updated>2011-05-31T09:03:52.003+02:00</updated>
   <content>Tutorial</content>
  </entry>
  <entry>
@@ -32,16 +41,7 @@
   <title xmlns="urn:iweb:">Gallery</title>
   <in-navbar xmlns="urn:iweb:">5D1E846B-C90B-49DE-B151-AD9AF0DF04B4</in-navbar>
   <link rel="alternate" href="Gallery.html"/>
-  <updated>2011-05-30T17:43:30.003+02:00</updated>
+  <updated>2011-05-31T09:03:52.004+02:00</updated>
   <content>Gallery</content>
- </entry>
- <entry>
-  <id>urn:iweb:11353392-17F8-42AA-8DBC-3CB526F618BF</id>
-  <title>About</title>
-  <title xmlns="urn:iweb:">About</title>
-  <in-navbar xmlns="urn:iweb:">11353392-17F8-42AA-8DBC-3CB526F618BF</in-navbar>
-  <link rel="alternate" href="About.html"/>
-  <updated>2011-05-30T17:43:30.004+02:00</updated>
-  <content>About</content>
  </entry>
 </feed>
