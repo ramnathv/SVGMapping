@@ -16,7 +16,7 @@
     padding: 10px;
 }
 .paragraph_style {
-    color: rgb(18, 122, 217);
+    color: rgb(46, 118, 218);
     font-family: 'Courier', serif;
     font-size: 12px;
     font-stretch: normal;
@@ -208,11 +208,6 @@
     text-indent: 0px;
     text-transform: none;
 }
-.style_External_400_256 {
-    bottom: 0px;
-    position: relative;
-    width: 400px;
-}
 .style_External_270_214 {
     position: relative;
 }
@@ -220,6 +215,11 @@
     bottom: 0px;
     position: absolute;
     width: 515px;
+}
+.style_External_400_222 {
+    bottom: 0px;
+    position: relative;
+    width: 400px;
 }
 .Body {
     color: rgb(81, 81, 81);
@@ -300,7 +300,7 @@
     position: absolute;
     width: 400px;
 }
-.Normal_External_400_256 {
+.Normal_External_400_222 {
     bottom: 0px;
     position: absolute;
     width: 400px;
