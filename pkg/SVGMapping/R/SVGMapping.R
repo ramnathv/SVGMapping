@@ -494,7 +494,7 @@ devSVGMapping <- function(template, attribute.name="@inkscape:label",
   .set(".dev.target.value", attribute.value)
 
   ## init. SVG device
-  .dev.rplot <- tempfile(pattern="rplot", fileext="svg")
+  .dev.rplot <- paste(tempfile(pattern="rplot"), ".svg", sep="")
   .set(".dev.rplot", .dev.rplot)
   Cairo_svg(filename=path.expand(.dev.rplot),
             width=width, heigh=height, pointsize=pointsize)
