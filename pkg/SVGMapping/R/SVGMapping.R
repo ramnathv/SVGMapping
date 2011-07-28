@@ -24,6 +24,29 @@
 
 load("inst/extdata/microarrayColors.rda")
 
+.set <- function(var,value) {
+  assign(var,value,envir=.svgmapping.env)
+}
+
+.get <- function(var) {
+  return(get(var,envir=.svgmapping.env))
+}
+
+.toUserUnit <- function(value) {
+  unit <- gsub("(-?[[:digit:].]+)(.*)","U_\\2",value)
+  value <- as.numeric(gsub("(-?[[:digit:].]+)(.*)","\\1",value))
+  user.unit <- switch(unit,
+                      U_mm = 3.543307 * value,
+                      U_px = value,
+                      U_pt = 1.25 * value,
+                      U_pc = 15 * value,
+                      U_cm = 35.43307 * value,
+                      U_in = 90 * value,
+                      U_ = value,
+                      default= NA)
+    return(user.unit)
+}
+
 computeExprColors <- function(X, col=microarrayColors, NA.color="#999999", a=-2, b=2) {
   satval <- 2
   n <- length(col)
@@ -446,3 +469,156 @@ Failed to load SVG image. Does your browser support SVG?
   close(con)
   browseURL(paste("file:///", htmlpath, sep=""), browser=browser)
 }
+
+devSVGMapping <- function(template, attribute.name="@inkscape:label",
+                          attribute.value="Rplot",width=10, height=8,
+                          pointsize=10) {
+
+  ## check Cairo
+  if(!.get(".cairo"))
+    stop("No Cairo SVG driver installed..")
+  
+  ## check
+  if(!is(template,"XMLInternalDocument"))
+    stop("Invalid template..")
+  .set(".dev.template", template)
+  
+  ## scan template..
+  target.node <- getNodeSet(template,
+                            paste("//svg:rect[",attribute.name,"='",
+                                  attribute.value,"']",sep=""))
+  if(length(target.node) == 0)
+    stop("Target Attribute not found..")
+  target.node <- target.node[[1]]
+  .set(".dev.target.name",attribute.name)
+  .set(".dev.target.value", attribute.value)
+
+  ## init. SVG device
+  .dev.rplot <- tempfile(pattern="rplot", fileext="svg")
+  .set(".dev.rplot", .dev.rplot)
+  Cairo_svg(filename=path.expand(.dev.rplot),
+            width=width, heigh=height, pointsize=pointsize)
+}
+
+includeSVG <- function(template, file,
+                       attribute.name="@inkscape:label",
+                       attribute.value="Rplot") {
+
+  ## check
+  if(!is(template,"XMLInternalDocument"))
+    stop("Invalid template..")
+
+  ## scan template..
+  target.node <- getNodeSet(template,
+                            paste("//svg:rect[",attribute.name,"='",
+                                  attribute.value,"']",sep=""))
+  if(length(target.node) == 0)
+    stop("Target Attribute not found..")
+  target.node <- target.node[[1]]
+  
+  ## init.
+  rplot.svg <- loadSVG(file)
+  
+  ## 1 - Fix all IDs
+  rplot.ids <- as.vector(xpathSApply(rplot.svg, "//@id"))
+  
+  ## 1.1 - Fix (if any) href to ids
+  rplot.nodes <- getNodeSet(rplot.svg, "//*[@xlink:href]")
+  tmp <- sapply(rplot.nodes,
+                function(el, prefix, ids) {
+                  href = xmlGetAttr(el,"xlink:href")
+                  if(grepl("^#", href)) {
+                    href = substr(href,2, nchar(href))
+                    if(href %in% ids) 
+                      xmlAttrs(el) <- c('xlink:href'=paste(prefix,href,sep="_"))
+                  }
+                },
+                prefix=paste("#",attribute.value,sep=""),
+                ids=rplot.ids)
+  
+  ## 1.2 - Fix ids
+  rplot.nodes <- getNodeSet(rplot.svg, "//*[@id]")
+  tmp <- sapply(rplot.nodes, 
+                function(el,prefix) {
+                  xmlAttrs(el) <- c(id=paste(prefix,xmlGetAttr(el,"id"),sep="_"))
+                }, 
+                prefix=attribute.value)
+  
+  ## 2 - Get Dimensions
+  s <- xmlChildren(rplot.svg)
+  s <- s[[1]]
+  rplot.x <- .toUserUnit(xmlGetAttr(s, "x", "0"))
+  rplot.y <- .toUserUnit(xmlGetAttr(s, "y", "0"))
+  rplot.w <- .toUserUnit(xmlGetAttr(s, "width", "0"))
+  rplot.h <- .toUserUnit(xmlGetAttr(s, "height", "0"))
+  rplot.nodes <- xmlChildren(s)
+
+  ## check
+  if(length(rplot.nodes) == 0) {
+    warning("Emplty plot..")
+    return()
+  }
+
+  ## get target coordinates
+  target.x <- .toUserUnit(xmlGetAttr(target.node, "x", "0"))
+  target.y <- .toUserUnit(xmlGetAttr(target.node, "y", "0"))
+  target.w <- .toUserUnit(xmlGetAttr(target.node, "width", "0"))
+  target.h <- .toUserUnit(xmlGetAttr(target.node, "height", "0"))
+  target.transform <- xmlGetAttr(target.node, "transform", "")
+
+  ## compute 'transform' instruction
+  scale.w = target.w/rplot.w
+  scale.h = target.h/rplot.h
+  scale = paste("scale(",scale.w,",",scale.h,")",sep="")
+  translate.x = target.x - rplot.x
+  translate.y = target.y - rplot.y
+  translate = paste("translate(",translate.x,",", translate.y,")",sep="")
+  transform = paste(target.transform,translate,scale)
+
+  ## create new encaspulating layer
+  target.g <- newXMLNode("g",
+                         attrs=c(
+                           id=paste("Rplot.g",attribute.value,sep=""),
+                           transform=transform
+                           )
+                         )
+
+  ## add Rplot nodes to the layer & replace template rectangle
+  tmp <- addChildren(target.g, rplot.nodes)
+  tmp <- replaceNodes(target.node, target.g)
+
+  ## free
+  free(rplot.svg)
+}
+
+dev.off <- function(which=dev.cur()) {
+
+  ## check Cairo
+  if(!.get(".cairo"))
+    stop("No Cairo SVG driver installed..")
+
+  ## close device
+  grDevices::dev.off(which)
+
+  ## init.
+  .dev.template <- .get(".dev.template")
+  .dev.rplot <- .get(".dev.rplot")
+  
+  ## check if we are plotting whithin a template?
+  if(!is.null(.dev.rplot)) {
+
+    includeSVG(.dev.template, .dev.rplot,
+               .get(".dev.target.name"),
+               .get(".dev.target.value"))
+    
+    ## free & unlink stuff
+    unlink(.dev.rplot)
+  }
+
+  ## eop
+  .set(".dev.template", NULL)
+  .set(".dev.rplot", NULL)
+  .set(".dev.target.name", NULL)
+  .set(".dev.target.value", NULL)
+}
+

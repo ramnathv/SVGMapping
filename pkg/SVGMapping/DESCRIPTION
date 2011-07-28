@@ -8,4 +8,4 @@ Maintainer: Jean-Christophe AUDE <jean-christophe.aude@cea.fr>
 Description: This package allows you to display experimental data on a custom-made SVG image.
 License: BSD
 LazyLoad: yes
-Depends: R (>= 2.10.0), XML, utils
+Depends: R (>= 2.10.0), XML, grDevices, utils
