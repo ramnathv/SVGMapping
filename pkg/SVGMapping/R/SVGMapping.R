@@ -475,7 +475,7 @@ devSVGMapping <- function(template, attribute.name="@inkscape:label",
                           pointsize=10) {
 
   ## check Cairo
-  if(!.get(".cairo"))
+  if(is.null(.get(".cairo")))
     stop("No Cairo SVG driver installed..")
   
   ## check
@@ -496,8 +496,13 @@ devSVGMapping <- function(template, attribute.name="@inkscape:label",
   ## init. SVG device
   .dev.rplot <- paste(tempfile(pattern="rplot"), ".svg", sep="")
   .set(".dev.rplot", .dev.rplot)
-  Cairo_svg(filename=path.expand(.dev.rplot),
-            width=width, heigh=height, pointsize=pointsize)
+  if (.get(".cairo") == "cairoDevice") {
+    Cairo_svg(filename=path.expand(.dev.rplot),
+              width=width, heigh=height, pointsize=pointsize)
+  } else {
+    svg(filename=path.expand(.dev.rplot),
+        width=width, heigh=height, pointsize=pointsize)
+  }
 }
 
 includeSVG <- function(template, file,
@@ -592,10 +597,6 @@ includeSVG <- function(template, file,
 }
 
 dev.off <- function(which=dev.cur()) {
-
-  ## check Cairo
-  if(!.get(".cairo"))
-    stop("No Cairo SVG driver installed..")
 
   ## close device
   grDevices::dev.off(which)

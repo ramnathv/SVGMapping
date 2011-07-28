@@ -8,26 +8,22 @@
 
     ## 0 - builtin SVG Cairo
     gr.cap <- capabilities()
-    if(gr.cap["cairo"]) return(TRUE)
+    if(gr.cap["cairo"]) return("builtin")
     
-    ## 1 - Find Cairo + CairoDevice in the search-path
+    ## 1 - Find CairoDevice in the search-path
     loaded = search()
-    if(length(grep("package:(Cairo|cairoDevice)", loaded)) == 2)
-      return(TRUE)
+    if(length(grep("package:cairoDevice", loaded)) == 1)
+      return("cairoDevice")
   
     ## 2 - Cairo + CairoDevice package available
-    cairo = find.package("Cairo", quiet=TRUE)
-    if(length(cairo) > 0) {
-      cairo.dev = find.package("cairoDevice", quiet=TRUE)
-      if(length(cairo.dev) > 0) {
-        ret = require("Cairo", quietly=TRUE)
-        if(ret) ret=require("cairoDevice", quietly=TRUE)
-      if(ret) return(TRUE)
-      }
+    cairo.dev = find.package("cairoDevice", quiet=TRUE)
+    if(length(cairo.dev) > 0) {
+      ret=require("cairoDevice", quietly=TRUE)
+      if(ret) return("cairoDevice")
     }
   
     ## eop
-    return(FALSE)
+    return(NULL)
   }
   
   ## init. package env.
@@ -38,7 +34,7 @@
 
   ## init. check CAIRO support
   cairo <- .checkCairo()
-  if(!cairo)
+  if(is.null(cairo))
     warning("No SVG Cairo engine.. ('devSVGMapping' won't work)")
   .set(".cairo", cairo)
 
