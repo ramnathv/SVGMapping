@@ -312,7 +312,7 @@ mapDataSVG <- function(svg, numData, tooltipData=numData,
           for (j in seq(along=geneColors)) {
             alpharad0 <- if (nconds > 2) -pi/2 else pi/2
             attrs2 <- list(style=paste("stroke-width:0;stroke:none;fill:", geneColors[[j]], sep=""))
-            if (!appliedTransform) {
+            if (!appliedTransform && "transform" %in% names(attrs)) {
               attrs2[["transform"]] <- attrs[["transform"]]
             }
             xs <- cx + r*cos(alpharad*(j-1) + alpharad0)
