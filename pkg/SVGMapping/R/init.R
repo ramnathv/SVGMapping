@@ -15,7 +15,7 @@
     if(length(grep("package:cairoDevice", loaded)) == 1)
       return("cairoDevice")
   
-    ## 2 - Cairo + CairoDevice package available
+    ## 2 - CairoDevice package available
     cairo.dev = find.package("cairoDevice", quiet=TRUE)
     if(length(cairo.dev) > 0) {
       ret=require("cairoDevice", quietly=TRUE)
