@@ -550,8 +550,7 @@ includeSVG <- function(template, file,
                 prefix=attribute.value)
   
   ## 2 - Get Dimensions
-  s <- xmlChildren(rplot.svg)
-  s <- s[[1]]
+  s <- xmlRoot(rplot.svg)
   rplot.x <- .toUserUnit(xmlGetAttr(s, "x", "0"))
   rplot.y <- .toUserUnit(xmlGetAttr(s, "y", "0"))
   rplot.w <- .toUserUnit(xmlGetAttr(s, "width", "0"))
@@ -560,7 +559,7 @@ includeSVG <- function(template, file,
 
   ## check
   if(length(rplot.nodes) == 0) {
-    warning("Emplty plot..")
+    warning("Empty plot..")
     return()
   }
 
