@@ -16,8 +16,8 @@ function displayAnnotation(evt, name, description, foldchanges, colors)
     var h = 110;
     var w = 400;
 
-    ww = svgDocument.rootElement.getBoundingClientRect().width;
-    wh = svgDocument.rootElement.getBoundingClientRect().height;
+    ww = svgDocument.rootElement.getBBox().width;
+    wh = svgDocument.rootElement.getBBox().height;
 
     bgrect = svgDocument.createElementNS(svgNS, "rect")
     bgrect.setAttributeNS(null, "width", w)
@@ -86,8 +86,8 @@ function displayAnnotation(evt, name, description, foldchanges, colors)
     }
 
     // Compute box position
-    x = evt.clientX+9;
-    y = evt.clientY+17;
+    x = evt.clientX + 9 + window.pageXOffset;
+    y = evt.clientY + 17 + window.pageYOffset;
     if (x + w > ww) {
         // The tooltip is out of the SVG document (on the right), so display it on the let of the mouse cursor
         x = x - w;
@@ -113,56 +113,6 @@ function displayAnnotation(evt, name, description, foldchanges, colors)
         boxes[i].setAttributeNS(null, "x", x + 10 + cw*i)
         fcs[i].setAttributeNS(null, "y", y + 90)
         fcs[i].setAttributeNS(null, "x", x + 10 + cw*i + cw/2 - fcs[i].getComputedTextLength()/2)
-    }
-}
-
-function displaySimpleAnnotation(evt, message)
-{
-    var svgNS = "http://www.w3.org/2000/svg";
-
-    var h = 30;
-
-    ww = parseInt(svgDocument.rootElement.getAttributeNS(null, "width"));
-    wh = parseInt(svgDocument.rootElement.getAttributeNS(null, "height"));
-
-    title1el = svgDocument.createElementNS(svgNS, "text")
-    title1el.appendChild(svgDocument.createTextNode(message))
-    svgDocument.rootElement.appendChild(title1el)
-    w = title1el.getComputedTextLength() + 20
-    annotElements.push(title1el);
-
-    bgrectTitle = svgDocument.createElementNS(svgNS, "rect")
-    bgrectTitle.setAttributeNS(null, "width", w)
-    bgrectTitle.setAttributeNS(null, "height", h)
-    bgrectTitle.setAttributeNS(null, "fill", "#eeeeee")
-    bgrectTitle.setAttributeNS(null, "stroke", "black")
-    svgDocument.rootElement.insertBefore(bgrectTitle, title1el)
-    annotElements.push(bgrectTitle);
-
-    // Compute box position
-    x = evt.clientX+9;
-    y = evt.clientY+17;
-    if (x + w > ww) {
-        // The tooltip is out of the SVG document (on the right), so display it on the let of the mouse cursor
-        x = x - w;
-    }
-    if (y + h > wh) {
-        // Same idea, when tooltip is below the document bottom
-        y = y - h - 25;
-    }
-
-    // Put all elements on the right place
-    bgrectTitle.setAttributeNS(null, "x", x)
-    bgrectTitle.setAttributeNS(null, "y", y)
-    title1el.setAttributeNS(null, "x", x + 10)
-    title1el.setAttributeNS(null, "y", y + 20)
-}
-
-function getTitle(element) {
-    for (var i=0; i<element.childNodes.length; i++) {
-        if (element.childNodes[i].nodeName == "title") {
-            return element.childNodes[i].firstChild.data
-        }
     }
 }
 
