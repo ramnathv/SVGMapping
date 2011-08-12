@@ -8,11 +8,12 @@
   the \code{file} argument, and returns the same value in the same circumstances.
 }
 \usage{
-saveSVG(svg, file="")
+saveSVG(svg, file="", add.script=TRUE)
 }
 \arguments{
 \item{svg}{SVG data (an \code{XMLInternalDocument})}
 \item{file}{Same as the \code{file} argument in \code{\link{cat}}}
+\item{add.script}{Add the JavaScript script to the SVG file. Set to FALSE to prevent adding the script.}
 }
 \value{
 Same as \code{\link{cat}}.

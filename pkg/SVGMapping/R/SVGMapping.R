@@ -428,30 +428,34 @@ mapDataSVG <- function(svg, numData, tooltipData=numData,
   return(invisible())
 }
 
-saveSVG <- function(svg, file="") {
-  ## Add instruction to initialize script when SVG file is loaded
-  root <- xmlRoot(svg)
-  setAttributeSVG(root, "onload", "init(evt)")
+saveSVG <- function(svg, file="", add.script=TRUE) {
+  if (add.script) {
+    ## Add instruction to initialize script when SVG file is loaded
+    root <- xmlRoot(svg)
+    setAttributeSVG(root, "onload", "init(evt)")
+  }
   ## Produce source XML
   xml <- saveXML(svg, indent=FALSE)
   xml <- gsub("\n</text>","</text>", xml)
   xml <- gsub("\n<tspan","<tspan", xml)
-  ## Add the JavaScript script
-  con <- file(system.file("extdata/script.js", package="SVGMapping"), "rb")
-  rawScript <- readLines(con)
-  close(con)
-  scriptText <- paste('\n<script type="text/ecmascript">\n<![CDATA[\n\n',
-                      paste(rawScript, collapse="\n"),
-                      '\n\n]]>\n</script>\n', sep="")
-  xml <- gsub("</svg>", paste(scriptText, "</svg>", sep=""), xml)
+  if (add.script) {
+    ## Add the JavaScript script
+    con <- file(system.file("extdata/script.js", package="SVGMapping"), "rb")
+    rawScript <- readLines(con)
+    close(con)
+    scriptText <- paste('\n<script type="text/ecmascript">\n<![CDATA[\n\n',
+                        paste(rawScript, collapse="\n"),
+                        '\n\n]]>\n</script>\n', sep="")
+    xml <- gsub("</svg>", paste(scriptText, "</svg>", sep=""), xml)
+  }
   ## Write/output the SVG
   cat(xml, file=file)
 }
 
-showSVG <- function(svg, browser=getOption("browser")) {
+showSVG <- function(svg, browser=getOption("browser"), add.script=TRUE) {
   path <- tempfile()
   svgpath <- paste(path, ".svg", sep="")
-  saveSVG(svg, svgpath)
+  saveSVG(svg, svgpath, add.script=add.script)
   htmlpath <- paste(path, ".html", sep="")
   con <- file(htmlpath, "w")
   html <- paste('<!DOCTYPE html>
