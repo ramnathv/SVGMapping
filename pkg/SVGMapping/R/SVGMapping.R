@@ -531,7 +531,7 @@ includeSVG <- function(template, file,
   ## 1 - Fix all IDs
   rplot.ids <- as.vector(xpathSApply(rplot.svg, "//@id"))
   
-  ## 1.1 - Fix (if any) href to ids
+  ## 1.1.1 - Fix (if any) href to ids
   rplot.nodes <- getNodeSet(rplot.svg, "//*[@xlink:href]")
   tmp <- sapply(rplot.nodes,
                 function(el, prefix, ids) {
@@ -544,6 +544,19 @@ includeSVG <- function(template, file,
                 },
                 prefix=paste("#",attribute.value,sep=""),
                 ids=rplot.ids)
+  
+  ## 1.1.2 Fix url(#...) references
+  for (node in getNodeSet(rplot.svg, "//*")) {
+    attrs <- xmlAttrs(node, addNamespacePrefix = TRUE)
+    for (attname in names(attrs)) {
+      attval <- attrs[[attname]]
+      if (grepl("url\\(\\#.+\\)", attval)) {
+        attval <- gsub("url\\(\\#", paste("url(#", attribute.value, "_", sep=""), attval)
+        attrs[[attname]] <- attval
+        xmlAttrs(node, suppressNamespaceWarning = TRUE) <- attrs
+      }
+    }
+  }
   
   ## 1.2 - Fix ids
   rplot.nodes <- getNodeSet(rplot.svg, "//*[@id]")
