@@ -27,6 +27,9 @@
   }
   
   ## init. package env.
+  .set("Templates.MetaData", list())
+  .set("Active.devices", list())
+  
   .set(".dev.template", NULL)
   .set(".dev.rplot", NULL)
   .set(".dev.target.name", NULL)

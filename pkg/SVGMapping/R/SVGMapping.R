@@ -24,29 +24,6 @@
 
 load("inst/extdata/microarrayColors.rda")
 
-.set <- function(var,value) {
-  assign(var,value,envir=.svgmapping.env)
-}
-
-.get <- function(var) {
-  return(get(var,envir=.svgmapping.env))
-}
-
-.toUserUnit <- function(value) {
-  unit <- gsub("(-?[[:digit:].]+)(.*)","U_\\2",value)
-  value <- as.numeric(gsub("(-?[[:digit:].]+)(.*)","\\1",value))
-  user.unit <- switch(unit,
-                      U_mm = 3.543307 * value,
-                      U_px = value,
-                      U_pt = 1.25 * value,
-                      U_pc = 15 * value,
-                      U_cm = 35.43307 * value,
-                      U_in = 90 * value,
-                      U_ = value,
-                      default= NA)
-    return(user.unit)
-}
-
 computeExprColors <- function(X, col=microarrayColors, NA.color="#999999", a=-2, b=2) {
   satval <- 2
   n <- length(col)
