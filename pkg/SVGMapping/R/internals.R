@@ -67,6 +67,23 @@
   .set("Templates.MetaData", templates_meta)
 }
 
+.make.id <- function(id) {
+  return(paste(names(id),as.numeric(id),sep="."))
+}
+
+.addDeviceInfo <- function(id,devinfo) {
+  devices <- .get("Active.Devices")
+  id <- .make.id(id)
+  devices[id]=list(devinfo)
+  .set("Active.Devices", devices)
+}
+
+.getDeviceInfo <- function(id) {
+  id <- .make.id(id)
+  devices <- .get("Active.Devices")
+  return(devices[id][[1]])
+}
+
 .toUserUnit <- function(value) {
   unit <- gsub("(-?[[:digit:].]+)(.*)","U_\\2",value)
   value <- as.numeric(gsub("(-?[[:digit:].]+)(.*)","\\1",value))

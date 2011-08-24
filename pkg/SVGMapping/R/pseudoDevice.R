@@ -37,7 +37,6 @@ devSVGMapping <- function(template, attribute.name="@inkscape:label",
   ## check
   if(!is(template,"XMLInternalDocument"))
     stop("Invalid template..")
-  .set(".dev.template", template)
   
   ## scan template..
   target.node <- getNodeSet(template,
@@ -46,12 +45,9 @@ devSVGMapping <- function(template, attribute.name="@inkscape:label",
   if(length(target.node) == 0)
     stop("Target Attribute not found..")
   target.node <- target.node[[1]]
-  .set(".dev.target.name",attribute.name)
-  .set(".dev.target.value", attribute.value)
 
   ## init. SVG device
   .dev.rplot <- paste(tempfile(pattern="rplot"), ".svg", sep="")
-  .set(".dev.rplot", .dev.rplot)
   if (.get(".cairo") == "cairoDevice") {
     Cairo_svg(filename=path.expand(.dev.rplot),
               width=width, heigh=height, pointsize=pointsize)
@@ -59,6 +55,14 @@ devSVGMapping <- function(template, attribute.name="@inkscape:label",
     svg(filename=path.expand(.dev.rplot),
         width=width, heigh=height, pointsize=pointsize)
   }
+
+  ## update device info
+  devinfo <- list("template" = template,
+                  "target.name" = attribute.name,
+                  "target.value" = attribute.value,
+                  "rplot" = .dev.rplot
+                  )
+  .addDeviceInfo(dev.cur(), devinfo)
 }
 
 includeSVG <- function(template, file,
@@ -168,25 +172,17 @@ dev.off <- function(which=dev.cur()) {
 
   ## close device
   grDevices::dev.off(which)
-
+  
   ## init.
-  .dev.template <- .get(".dev.template")
-  .dev.rplot <- .get(".dev.rplot")
+  devinfo <- .getDeviceInfo(which)
   
   ## check if we are plotting whithin a template?
-  if(!is.null(.dev.rplot)) {
-
-    includeSVG(.dev.template, .dev.rplot,
-               .get(".dev.target.name"),
-               .get(".dev.target.value"))
+  if(!is.null(devinfo)) {
+    includeSVG(devinfo$template, devinfo$rplot,
+               devinfo$target.name,devinfo$target.value)
     
     ## free & unlink stuff
-    unlink(.dev.rplot)
+    unlink(devinfo$rplot)
+    .addDeviceInfo(which, NULL)
   }
-
-  ## eop
-  .set(".dev.template", NULL)
-  .set(".dev.rplot", NULL)
-  .set(".dev.target.name", NULL)
-  .set(".dev.target.value", NULL)
 }
