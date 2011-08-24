@@ -60,8 +60,7 @@ computeExprColors <- function(X, col=microarrayColors, NA.color="#999999", a=-2,
 }
 
 loadSVG <- function(file) {
-  svg <- list()
-  svg$xml <- xmlTreeParse(file, useInternalNodes=TRUE, addAttributeNamespaces=TRUE, fullNamespaceInfo=FALSE)
+  svg <- xmlTreeParse(file, useInternalNodes=TRUE, addAttributeNamespaces=TRUE, fullNamespaceInfo=FALSE)
   return(svg)
 }
 
@@ -108,21 +107,18 @@ getStyleSVG <- function(node, style.parameter) {
 }
 
 getLabelsSVG <- function(svg, what="*", geneAttribute="inkscape:label") {
-  labels <- xpathSApply(svg$xml, paste("//", what, "[@", geneAttribute, "]", sep=""), xmlGetAttr, geneAttribute)
+  labels <- xpathSApply(svg, paste("//", what, "[@", geneAttribute, "]", sep=""), xmlGetAttr, geneAttribute)
   labels <- unique(labels)
   return(labels)
 }
+
 
 mapDataSVG <- function(svg, numData, tooltipData=numData,
                        mode="fill", what="*",
                        geneAttribute="inkscape:label",
                        col=microarrayColors, NA.color="#999999", colrange=c(-2,2),
                        annotation=NULL, fillAngle=NULL) {
-
-  ## init.
   numData <- as.matrix(numData)
-
-  ## check
   if (ncol(numData) < 1) stop("numData must contain at least one column")
   if (! (mode %in% c("fill", "stroke", "pie", "tooltip-only"))) {
     tooltipData <- NULL
@@ -137,9 +133,7 @@ mapDataSVG <- function(svg, numData, tooltipData=numData,
       stop("numData and tooltipData must have the same dimension")
     rownames(tooltipData) <- rownames(numData)
   }
-
-  ## select nodes
-  nodes <- getNodeSet(svg$xml, paste("//", what, "[@", geneAttribute, "]", sep=""))
+  nodes <- getNodeSet(svg, paste("//", what, "[@", geneAttribute, "]", sep=""))
   getGeneColors <- function(gene) {
     computeExprColors(numData[gene,], col=col, NA.color=NA.color, a=colrange[[1]], b=colrange[[2]])
   }
@@ -195,10 +189,9 @@ mapDataSVG <- function(svg, numData, tooltipData=numData,
     }
     return(invisible())
   }
-
-  ## Mapping MODE
-  if (mode == "fill") {                              # Simple color fill
+  if (mode == "fill") {
     if (ncol(numData) < 2) {
+                                        # Simple color fill
       for (node in nodes) {
         gene <- xmlGetAttr(node, geneAttribute)
         if (gene %in% rownames(numData)) {
@@ -207,10 +200,11 @@ mapDataSVG <- function(svg, numData, tooltipData=numData,
           addToolTip(node, gene, geneColor)
         }
       }
-    } else {                                        # Multi-color fill
+    } else {
+                                        # Multi-color fill
       if (is.null(fillAngle))
         fillAngle <- 0
-      defs <- getNodeSet(svg$xml, "//svg:defs")
+      defs <- getNodeSet(svg, "//svg:defs")
       if (length(defs) == 0) stop("Missing defs node in SVG")
       defs <- defs[[1]]
       for (node in nodes) {
@@ -252,7 +246,7 @@ mapDataSVG <- function(svg, numData, tooltipData=numData,
         }
       }
     }
-  } else if (mode == "stroke") {                   # Stroke 
+  } else if (mode == "stroke") {
     if (ncol(numData)>1) stop("This mode is not compatible with multiple conditions")
     for (node in nodes) {
       gene <- xmlGetAttr(node, geneAttribute)
@@ -262,7 +256,7 @@ mapDataSVG <- function(svg, numData, tooltipData=numData,
         addToolTip(node, gene, geneColor)
       }
     }
-  } else if (mode == "pie") {                      # Pie-chart
+  } else if (mode == "pie") {
     nconds <- ncol(numData)
     alphadeg <- 360/nconds
     alpharad <- 2*pi/nconds
@@ -346,7 +340,7 @@ mapDataSVG <- function(svg, numData, tooltipData=numData,
         }
       }
     }
-  } else if (mode == "tooltip-only") {             # Tooltip only 
+  } else if (mode == "tooltip-only") {
     for (node in nodes) {
       gene <- xmlGetAttr(node, geneAttribute)
       if (gene %in% rownames(numData)) {
@@ -354,7 +348,7 @@ mapDataSVG <- function(svg, numData, tooltipData=numData,
         addToolTip(node, gene, geneColor)
       }
     }
-  } else if (mode == "fill-opacity") {             # Opacity control
+  } else if (mode == "fill-opacity") {
     if (ncol(numData)>1) stop("This mode is not compatible with multiple conditions")
     for (node in nodes) {
       gene <- xmlGetAttr(node, geneAttribute)
@@ -363,7 +357,7 @@ mapDataSVG <- function(svg, numData, tooltipData=numData,
         setStyleSVG(node, "fill-opacity", geneValue)
       }
     }
-  } else if (mode == "stroke-opacity") {           # Stroke opacity
+  } else if (mode == "stroke-opacity") {
     if (ncol(numData)>1) stop("This mode is not compatible with multiple conditions")
     for (node in nodes) {
       gene <- xmlGetAttr(node, geneAttribute)
@@ -372,7 +366,7 @@ mapDataSVG <- function(svg, numData, tooltipData=numData,
         setStyleSVG(node, "stroke-opacity", geneValue)
       }
     }
-  } else if (mode == "stroke-width") {             # Stroke width
+  } else if (mode == "stroke-width") {
     if (ncol(numData)>1) stop("This mode is not compatible with multiple conditions")
     for (node in nodes) {
       gene <- xmlGetAttr(node, geneAttribute)
@@ -381,11 +375,11 @@ mapDataSVG <- function(svg, numData, tooltipData=numData,
         setStyleSVG(node, "stroke-width", geneValue)
       }
     }
-  } else if (mode == "partial-fill") {             # Partial filling
+  } else if (mode == "partial-fill") {
     if (is.null(fillAngle))
       fillAngle <- -pi / 2
     if (ncol(numData)>1) stop("This mode is not compatible with multiple conditions")
-    defs <- getNodeSet(svg$xml, "//svg:defs")
+    defs <- getNodeSet(svg, "//svg:defs")
     if (length(defs) == 0) stop("Missing defs node in SVG")
     defs <- defs[[1]]
     for (node in nodes) {
@@ -435,20 +429,17 @@ mapDataSVG <- function(svg, numData, tooltipData=numData,
 }
 
 saveSVG <- function(svg, file="", add.script=TRUE) {
-  
-  ## Add instruction to initialize script when SVG file is loaded
-  if (add.script) {  
-    root <- xmlRoot(svg$xml)
+  if (add.script) {
+    ## Add instruction to initialize script when SVG file is loaded
+    root <- xmlRoot(svg)
     setAttributeSVG(root, "onload", "init(evt)")
   }
- 
-  ## Produce source XML (fix. newlines issues)
-  xml <- saveXML(svg$xml, indent=FALSE)
+  ## Produce source XML
+  xml <- saveXML(svg, indent=FALSE)
   xml <- gsub("\n</text>","</text>", xml)
   xml <- gsub("\n<tspan","<tspan", xml)
-
-  ## Add the JavaScript script
   if (add.script) {
+    ## Add the JavaScript script
     con <- file(system.file("extdata/script.js", package="SVGMapping"), "rb")
     rawScript <- readLines(con)
     close(con)
@@ -457,7 +448,6 @@ saveSVG <- function(svg, file="", add.script=TRUE) {
                         '\n\n]]>\n</script>\n', sep="")
     xml <- gsub("</svg>", paste(scriptText, "</svg>", sep=""), xml)
   }
-  
   ## Write/output the SVG
   cat(xml, file=file)
 }
@@ -483,3 +473,169 @@ Failed to load SVG image. Does your browser support SVG?
   close(con)
   browseURL(paste("file:///", htmlpath, sep=""), browser=browser)
 }
+
+devSVGMapping <- function(template, attribute.name="@inkscape:label",
+                          attribute.value="Rplot",width=10, height=8,
+                          pointsize=10) {
+
+  ## check Cairo
+  if(is.null(.get(".cairo")))
+    stop("No Cairo SVG driver installed..")
+  
+  ## check
+  if(!is(template,"XMLInternalDocument"))
+    stop("Invalid template..")
+  .set(".dev.template", template)
+  
+  ## scan template..
+  target.node <- getNodeSet(template,
+                            paste("//svg:rect[",attribute.name,"='",
+                                  attribute.value,"']",sep=""))
+  if(length(target.node) == 0)
+    stop("Target Attribute not found..")
+  target.node <- target.node[[1]]
+  .set(".dev.target.name",attribute.name)
+  .set(".dev.target.value", attribute.value)
+
+  ## init. SVG device
+  .dev.rplot <- paste(tempfile(pattern="rplot"), ".svg", sep="")
+  .set(".dev.rplot", .dev.rplot)
+  if (.get(".cairo") == "cairoDevice") {
+    Cairo_svg(filename=path.expand(.dev.rplot),
+              width=width, heigh=height, pointsize=pointsize)
+  } else {
+    svg(filename=path.expand(.dev.rplot),
+        width=width, heigh=height, pointsize=pointsize)
+  }
+}
+
+includeSVG <- function(template, file,
+                       attribute.name="@inkscape:label",
+                       attribute.value="Rplot") {
+
+  ## check
+  if(!is(template,"XMLInternalDocument"))
+    stop("Invalid template..")
+
+  ## scan template..
+  target.node <- getNodeSet(template,
+                            paste("//svg:rect[",attribute.name,"='",
+                                  attribute.value,"']",sep=""))
+  if(length(target.node) == 0)
+    stop("Target Attribute not found..")
+  target.node <- target.node[[1]]
+  
+  ## init.
+  rplot.svg <- loadSVG(file)
+  
+  ## 1 - Fix all IDs
+  rplot.ids <- as.vector(xpathSApply(rplot.svg, "//@id"))
+  
+  ## 1.1.1 - Fix (if any) href to ids
+  rplot.nodes <- getNodeSet(rplot.svg, "//*[@xlink:href]")
+  tmp <- sapply(rplot.nodes,
+                function(el, prefix, ids) {
+                  href = xmlGetAttr(el,"xlink:href")
+                  if(grepl("^#", href)) {
+                    href = substr(href,2, nchar(href))
+                    if(href %in% ids) 
+                      xmlAttrs(el) <- c('xlink:href'=paste(prefix,href,sep="_"))
+                  }
+                },
+                prefix=paste("#",attribute.value,sep=""),
+                ids=rplot.ids)
+  
+  ## 1.1.2 Fix url(#...) references
+  for (node in getNodeSet(rplot.svg, "//*")) {
+    attrs <- xmlAttrs(node, addNamespacePrefix = TRUE)
+    for (attname in names(attrs)) {
+      attval <- attrs[[attname]]
+      if (grepl("url\\(\\#.+\\)", attval)) {
+        attval <- gsub("url\\(\\#", paste("url(#", attribute.value, "_", sep=""), attval)
+        attrs[[attname]] <- attval
+        xmlAttrs(node, suppressNamespaceWarning = TRUE) <- attrs
+      }
+    }
+  }
+  
+  ## 1.2 - Fix ids
+  rplot.nodes <- getNodeSet(rplot.svg, "//*[@id]")
+  tmp <- sapply(rplot.nodes, 
+                function(el,prefix) {
+                  xmlAttrs(el) <- c(id=paste(prefix,xmlGetAttr(el,"id"),sep="_"))
+                }, 
+                prefix=attribute.value)
+  
+  ## 2 - Get Dimensions
+  s <- xmlRoot(rplot.svg)
+  rplot.x <- .toUserUnit(xmlGetAttr(s, "x", "0"))
+  rplot.y <- .toUserUnit(xmlGetAttr(s, "y", "0"))
+  rplot.w <- .toUserUnit(xmlGetAttr(s, "width", "0"))
+  rplot.h <- .toUserUnit(xmlGetAttr(s, "height", "0"))
+  rplot.nodes <- xmlChildren(s)
+
+  ## check
+  if(length(rplot.nodes) == 0) {
+    warning("Empty plot..")
+    return()
+  }
+
+  ## get target coordinates
+  target.x <- .toUserUnit(xmlGetAttr(target.node, "x", "0"))
+  target.y <- .toUserUnit(xmlGetAttr(target.node, "y", "0"))
+  target.w <- .toUserUnit(xmlGetAttr(target.node, "width", "0"))
+  target.h <- .toUserUnit(xmlGetAttr(target.node, "height", "0"))
+  target.transform <- xmlGetAttr(target.node, "transform", "")
+
+  ## compute 'transform' instruction
+  scale.w = target.w/rplot.w
+  scale.h = target.h/rplot.h
+  scale = paste("scale(",scale.w,",",scale.h,")",sep="")
+  translate.x = target.x - rplot.x
+  translate.y = target.y - rplot.y
+  translate = paste("translate(",translate.x,",", translate.y,")",sep="")
+  transform = paste(target.transform,translate,scale)
+
+  ## create new encaspulating layer
+  target.g <- newXMLNode("g",
+                         attrs=c(
+                           id=paste("Rplot.g",attribute.value,sep=""),
+                           transform=transform
+                           )
+                         )
+
+  ## add Rplot nodes to the layer & replace template rectangle
+  tmp <- addChildren(target.g, rplot.nodes)
+  tmp <- replaceNodes(target.node, target.g)
+
+  ## free
+  free(rplot.svg)
+}
+
+dev.off <- function(which=dev.cur()) {
+
+  ## close device
+  grDevices::dev.off(which)
+
+  ## init.
+  .dev.template <- .get(".dev.template")
+  .dev.rplot <- .get(".dev.rplot")
+  
+  ## check if we are plotting whithin a template?
+  if(!is.null(.dev.rplot)) {
+
+    includeSVG(.dev.template, .dev.rplot,
+               .get(".dev.target.name"),
+               .get(".dev.target.value"))
+    
+    ## free & unlink stuff
+    unlink(.dev.rplot)
+  }
+
+  ## eop
+  .set(".dev.template", NULL)
+  .set(".dev.rplot", NULL)
+  .set(".dev.target.name", NULL)
+  .set(".dev.target.value", NULL)
+}
+
