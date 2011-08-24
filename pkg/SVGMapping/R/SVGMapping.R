@@ -433,23 +433,43 @@ saveSVG <- function(svg, file="", add.script=TRUE) {
     ## Add instruction to initialize script when SVG file is loaded
     root <- xmlRoot(svg)
     setAttributeSVG(root, "onload", "init(evt)")
+    ## Add the JavaScript script
+    con <- file(system.file("extdata/script.js", package="SVGMapping"), "rb")
+    script.lines <- readLines(con)
+    close(con)
+    script <- paste(script.lines, collapse="\n")
+    addScriptSVG(svg, script, id="SVGMapping-script")
   }
+  
   ## Produce source XML
   xml <- saveXML(svg, indent=FALSE)
   xml <- gsub("\n</text>","</text>", xml)
   xml <- gsub("\n<tspan","<tspan", xml)
-  if (add.script) {
-    ## Add the JavaScript script
-    con <- file(system.file("extdata/script.js", package="SVGMapping"), "rb")
-    rawScript <- readLines(con)
-    close(con)
-    scriptText <- paste('\n<script type="text/ecmascript">\n<![CDATA[\n\n',
-                        paste(rawScript, collapse="\n"),
-                        '\n\n]]>\n</script>\n', sep="")
-    xml <- gsub("</svg>", paste(scriptText, "</svg>", sep=""), xml)
-  }
+  
   ## Write/output the SVG
   cat(xml, file=file)
+}
+
+addScriptSVG <- function(svg, script, id=NULL) {
+  cdata <- newXMLCDataNode(paste("\n", script, "\n", sep=""))
+  script.attrs <- list(type="text/ecmascript")
+  if (!is.null(id)) {
+    script.attrs[["id"]] <- id
+  }
+  scriptnode <- newXMLNode("script", attrs=script.attrs, .children=list(cdata))
+  
+  # Replace a script node if it has the same id
+  replaced <- FALSE
+  if (!is.null(id)) {
+    with.same.id <- getNodeSet(svg, paste("//svg:script[@id=\"", id, "\"]", sep=""))
+    if (length(with.same.id) > 0) {
+      replaceNodes(with.same.id[[1]], scriptnode)
+      replaced <- TRUE
+    } 
+  }
+  if (!replaced) {
+    addChildren(xmlRoot(svg), kids=list(scriptnode))
+  }
 }
 
 showSVG <- function(svg, browser=getOption("browser"), add.script=TRUE) {

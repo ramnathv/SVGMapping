@@ -89,7 +89,7 @@ function displayAnnotation(evt, name, description, foldchanges, colors)
     x = evt.clientX + 9 + window.pageXOffset;
     y = evt.clientY + 17 + window.pageYOffset;
     if (x + w > ww) {
-        // The tooltip is out of the SVG document (on the right), so display it on the let of the mouse cursor
+        // The tooltip is out of the SVG document (on the right), so display it on the left of the mouse cursor
         x = x - w;
     }
     if (y + h > wh) {
