@@ -468,6 +468,17 @@ addScriptSVG <- function(svg, script, id=NULL) {
   }
 }
 
+addDefinesSVG <- function(svg, nodes) {
+  defs <- getNodeSet(svg, "//svg:defs")
+  if (length(defs) == 0) {
+    defs <- newXMLNode("defs")
+    addChildren(xmlRoot(svg), defs)
+  } else {
+    defs <- defs[[1]]
+  }
+  addChildren(defs, nodes)
+}
+
 showSVG <- function(svg, browser=getOption("browser"), add.script=TRUE) {
   path <- tempfile()
   svgpath <- paste(path, ".svg", sep="")
