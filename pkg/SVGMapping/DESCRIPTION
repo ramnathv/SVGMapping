@@ -1,7 +1,7 @@
 Package: SVGMapping
 Type: Package
 Title: Map experimental data on custom-made SVG file
-Version: 1.2
+Version: 1.3
 Date: 2011-05-12
 Author: Jean-Christophe AUDE, Raphael CHAMPEIMONT
 Maintainer: Jean-Christophe AUDE <jean-christophe.aude@cea.fr>

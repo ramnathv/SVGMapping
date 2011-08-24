@@ -89,6 +89,25 @@ getLabelsSVG <- function(svg, what="*", geneAttribute="inkscape:label") {
   return(labels)
 }
 
+setTextSVG <- function(svg, searchAttributeValue, text, searchAttribute="inkscape:label") {
+  nodes <- getNodeSet(svg, paste("//svg:text[@", searchAttribute, "]", sep=""))
+  for (node in nodes) {
+    attval <- getAttributeSVG(node, searchAttribute)
+    if (attval == searchAttributeValue) {
+      # If the text node has a tspan child, add the text in the tspan child
+      for (child in xmlChildren(node)) {
+        if (xmlName(child) == "tspan") {
+          node <- child
+          break
+        }
+      }
+      # Remove previous text
+      removeChildren(node, kids=1)
+      # Add user-supplied text
+      addChildren(node, text)
+    }
+  }
+}
 
 mapDataSVG <- function(svg, numData, tooltipData=numData,
                        mode="fill", what="*",
@@ -124,7 +143,7 @@ mapDataSVG <- function(svg, numData, tooltipData=numData,
   } else if (is.function(annotation)) {
     annotFunction <- annotation
   } else if (is.matrix(annotation) || is.data.frame(annotation)) {
-                                        # annotation is a matrix/data.frame
+    ## annotation is a matrix/data.frame
     annotFunction <- function(x) {
       if (x %in% rownames(annotation)) {
         return(as.list(annotation[x,]))
