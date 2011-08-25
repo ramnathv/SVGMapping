@@ -38,7 +38,10 @@ JavaScript. We suggest to create your SVG drawings by using the free
 Inkscape\footnote{\href{http://inkscape.org/}{http://inkscape.org/}} software.
 \end{abstract}
 
+\setlength{\parskip}{0mm}
 \tableofcontents
+
+\setlength{\parskip}{4mm}
 
 \newpage
 
@@ -395,6 +398,8 @@ followed by the \textit{'partial-fill'} mode.
 
 \subsection{Colors}\label{sec:colors}
 
+\subsubsection{Changing the colors}
+
 All functions that produce colors in \Rfunc{mapDataSVG} call \texttt{computeExprColors}
 to compute colors from numeric data. This function uniformly maps a range $[a,b]$ to a list of colors,
 by making the assumption that the first color should be mapped to $a$ and the last to $b$.
@@ -434,6 +439,8 @@ showSVG(mysvg)
 The \texttt{substring} call is required because the \texttt{rainbow()} function returns a list of colors
 in the \verb!#RRGGBBAA! format while SVG uses the \verb!#RRGGBB! format.
 
+\subsubsection{Discrete color mapping}
+
 You might also be interested in {\bf discrete} color mapping (where colors are
 selected using their position in the \textit{col} list):
 
@@ -445,6 +452,34 @@ showSVG(mysvg)
 @
 \[ \includegraphics[width=4cm]{colors3.png} \]
 
+\subsubsection{Using gradients instead of colors}
+
+Instead of using colors, you may want to use references to gradients you declared.
+In this case the mapping is necessarly discrete, and only works in single-experiment fill mode.
+
+<<eval=FALSE,keep.source=TRUE>>=
+mysvg <- loadSVG(TCAtemplate2)
+
+stop1 <- newXMLNode("stop", attrs=list(offset=0, style="stop-color:red"))
+stop2 <- newXMLNode("stop", attrs=list(offset=1, style="stop-color:darkred"))
+gradient <- newXMLNode("radialGradient", attrs=list(id="redGradient"),
+                       .children=list(stop1,stop2))
+addDefinesSVG(mysvg, gradient)
+
+stop1 <- newXMLNode("stop", attrs=list(offset=0, style="stop-color:lightgreen"))
+stop2 <- newXMLNode("stop", attrs=list(offset=1, style="stop-color:darkgreen"))
+gradient <- newXMLNode("radialGradient", attrs=list(id="greenGradient"),
+                       .children=list(stop1,stop2))
+addDefinesSVG(mysvg, gradient)
+
+logratios <- yeastExprData[,1]
+# Here log-ratios are used for colors but fold-changes are displayed
+mapDataSVG(mysvg, logratios, tooltipData=ifelse(logratios>=0, 2^(logratios), -2^-logratios),
+           annotation=yeastAnnotMatrix, col=c("url(#greenGradient)", "url(#redGradient)"))
+
+showSVG(mysvg)
+@
+\[ \includegraphics[width=10cm]{colors4.png} \]
 
 
 \bibliographystyle{plain}

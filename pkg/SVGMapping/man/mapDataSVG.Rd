@@ -52,7 +52,7 @@ because we need to compute a color for background in the tooltip window.}
 }
 \item{what}{The type of SVG nodes to apply the data to, for example "svg:path". By default any type of SVG element.}
 \item{geneAttribute}{The SVG attribute that tells which gene the element is, or in a general way which row name in \code{numData}.}
-\item{col}{A vector of colors (as characters) to use in coloring modes ("fill", "stroke", "pie" and "tooltip-only"). Color format is #RRGGBB}
+\item{col}{A vector of colors (as characters) to use in coloring modes ("fill", "stroke", "pie" and "tooltip-only"). Color format is #RRGGBB. Advanced: In single-experiment fill mode, you may replace color names by references to gradients (in fact by any valid value for the SVG style "fill" parameter).}
 \item{NA.color}{The color to use for NA values}
 \item{colrange}{The range of values to map uniformly to the list of colors}
 \item{annotation}{A function that, when given an gene (ie. a row name in numData) returns a list with fields \code{name} and \code{description} that are used for the tooltip window. Alternatively, you can give a matrix with genes as row names and a \code{name} and \code{description} column that work as just explained. There is also an optional \code{url} field that, if present, is the URL to go to when the SVG object is cliked.}
