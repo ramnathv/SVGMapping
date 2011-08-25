@@ -137,6 +137,7 @@ var offset1 = null
 var offset2 = null
 var stop1 = null
 var stop2 = null
+var deltaOffset = 0.1
 
 function stopAnimation() {
 	if (currentAnimation == "partial-fill") {
@@ -150,7 +151,7 @@ function stopAnimation() {
 function nextAnimationStep() {
 	if (currentAnimation == "partial-fill") {
 		var currentOffset = stop1.offset.baseVal
-		currentOffset += 0.02
+		currentOffset += deltaOffset
 		if (currentOffset > offset1) {
 			stopAnimation()
 		} else {
@@ -186,5 +187,8 @@ function animatePartialFill(evt) {
 	offset2 = stop2.offset.baseVal
 	stop1.offset.baseVal = 0
 	stop2.offset.baseVal = 0
+	deltaOffset = offset1 / 20
+	if (deltaOffset == 0)
+		deltaOffset = 0.01
 	nextAnimationStep()
 }
