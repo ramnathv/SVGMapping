@@ -110,7 +110,7 @@ setTextSVG <- function(svg, searchAttributeValue, text, searchAttribute="inkscap
 }
 
 addLinkSVG <- function(node, url) {
-  a <- newXMLNode("a", attrs=list("xlink:href"=url, target="_blank"), .children=list(node), suppressNamespaceWarning=TRUE)
+  a <- newXMLNode("a", attrs=list("xlink:href"=url, target="_blank"), .children=list(node), namespaceDefinitions=c(xlink="http://www.w3.org/1999/xlink"))
   addSibling(node, a)
   removeNodes(node)
   invisible(NULL)
