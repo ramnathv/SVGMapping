@@ -109,6 +109,24 @@ setTextSVG <- function(svg, searchAttributeValue, text, searchAttribute="inkscap
   }
 }
 
+addLinkSVG <- function(node, url) {
+  a <- newXMLNode("a", attrs=list("xlink:href"=url, target="_blank"), .children=list(node), suppressNamespaceWarning=TRUE)
+  addSibling(node, a)
+  removeNodes(node)
+  invisible(NULL)
+}
+
+addLinkByLabelSVG <- function(svg, searchAttributeValue, url, what="*", searchAttribute = "inkscape:label") {
+  nodes <- getNodeSet(svg, paste("//", what, "[@", searchAttribute, "]", sep=""))
+  for (node in nodes) {
+      attval <- getAttributeSVG(node, searchAttribute)
+      if (attval == searchAttributeValue) {
+          addLinkSVG(node, url)
+      }
+  }
+  invisible(NULL)
+}
+
 mapDataSVG <- function(svg, numData, tooltipData=numData,
                        mode="fill", what="*",
                        geneAttribute="inkscape:label",
@@ -182,7 +200,8 @@ mapDataSVG <- function(svg, numData, tooltipData=numData,
     setAttributeSVG(node, "onmouseover", paste("displayAnnotation(", paste(jsargs, collapse=", "), ")", sep=""))
     setAttributeSVG(node, "onmouseout", "hideAnnotation(evt)")
     if (!is.null(annot) && !is.null(annot$url)) {
-      setAttributeSVG(node, "onclick", paste("window.open('", annot$url,  "')", sep=""))
+      addLinkSVG(node, annot$url)
+      #setAttributeSVG(node, "onclick", paste("window.open('", annot$url,  "')", sep=""))
     }
     return(invisible())
   }
