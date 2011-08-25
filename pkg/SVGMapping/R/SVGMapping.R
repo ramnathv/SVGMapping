@@ -127,12 +127,23 @@ addLinkByLabelSVG <- function(svg, searchAttributeValue, url, what="*", searchAt
   invisible(NULL)
 }
 
+addJavaScriptCallBack <- function(node, attribute, call) {
+  originalCall <- getAttributeSVG(node, attribute)
+  if (is.null(originalCall)) {
+    newCall <- call
+  } else {
+    newCall <- paste(originalCall, call, sep="; ")
+  }
+  setAttributeSVG(node, attribute, newCall)
+}
+
 mapDataSVG <- function(svg, numData, tooltipData=numData,
                        mode="fill", what="*",
                        geneAttribute="inkscape:label",
                        col=microarrayColors, NA.color="#999999", colrange=c(-2,2),
                        annotation=NULL,
-                       fillAngle=NULL, pieStartAngle=NULL, pieClockwise=TRUE) {
+                       fillAngle=NULL, pieStartAngle=NULL, pieClockwise=TRUE,
+                       animations=TRUE) {
   numData <- as.matrix(numData)
   if (ncol(numData) < 1) stop("numData must contain at least one column")
   if (! (mode %in% c("fill", "stroke", "pie", "tooltip-only"))) {
@@ -197,8 +208,8 @@ mapDataSVG <- function(svg, numData, tooltipData=numData,
     jsargs[[3]] <- addquotes(if (!is.null(annot) && !is.null(annot$description)) annot$description else "null")
     jsargs[[4]] <- paste("new Array(", paste(addquotes(displayedFoldChanges), collapse=","), ")", sep="")
     jsargs[[5]] <- paste("new Array(", paste(addquotes(geneColors), collapse=","), ")", sep="")
-    setAttributeSVG(node, "onmouseover", paste("displayAnnotation(", paste(jsargs, collapse=", "), ")", sep=""))
-    setAttributeSVG(node, "onmouseout", "hideAnnotation(evt)")
+    addJavaScriptCallBack(node, "onmouseover", paste("displayAnnotation(", paste(jsargs, collapse=", "), ")", sep=""))
+    addJavaScriptCallBack(node, "onmouseout", "hideAnnotation(evt)")
     if (!is.null(annot) && !is.null(annot$url)) {
       addLinkSVG(node, annot$url)
       #setAttributeSVG(node, "onclick", paste("window.open('", annot$url,  "')", sep=""))
@@ -445,6 +456,10 @@ mapDataSVG <- function(svg, numData, tooltipData=numData,
         gradient <- newXMLNode("linearGradient", attrs=list(id=gradient.id, x1=x1, x2=x2, y1=y1, y2=y2), .children=gradient.children)
         addChildren(defs, kids=list(gradient))
         setStyleSVG(node, "fill", paste("url(#", gradient.id, ")", sep=""))
+        if (animations) {
+          addJavaScriptCallBack(node, "onmouseover", "animatePartialFill(evt)")
+          addJavaScriptCallBack(node, "onmouseout", "stopAnimation()")
+        }
       }
     }
   } else {
