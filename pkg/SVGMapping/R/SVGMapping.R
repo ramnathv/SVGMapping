@@ -113,7 +113,8 @@ mapDataSVG <- function(svg, numData, tooltipData=numData,
                        mode="fill", what="*",
                        geneAttribute="inkscape:label",
                        col=microarrayColors, NA.color="#999999", colrange=c(-2,2),
-                       annotation=NULL, fillAngle=NULL) {
+                       annotation=NULL,
+                       fillAngle=NULL, pieStartAngle=NULL, pieClockwise=TRUE) {
   numData <- as.matrix(numData)
   if (ncol(numData) < 1) stop("numData must contain at least one column")
   if (! (mode %in% c("fill", "stroke", "pie", "tooltip-only"))) {
@@ -187,7 +188,7 @@ mapDataSVG <- function(svg, numData, tooltipData=numData,
   }
   if (mode == "fill") {
     if (ncol(numData) < 2) {
-                                        # Simple color fill
+      ## Simple color fill
       for (node in nodes) {
         gene <- xmlGetAttr(node, geneAttribute)
         if (gene %in% rownames(numData)) {
@@ -197,7 +198,7 @@ mapDataSVG <- function(svg, numData, tooltipData=numData,
         }
       }
     } else {
-                                        # Multi-color fill
+      ## Multi-color fill
       if (is.null(fillAngle))
         fillAngle <- 0
       defs <- getNodeSet(svg, "//svg:defs")
@@ -306,15 +307,24 @@ mapDataSVG <- function(svg, numData, tooltipData=numData,
           }
           # Now build the pie chart
           for (j in seq(along=geneColors)) {
-            alpharad0 <- if (nconds > 2) -pi/2 else pi/2
+            if (is.null(pieStartAngle)) {
+              alpharad0 <- if (nconds > 2) -pi/2 else pi/2
+            } else {
+              alpharad0 <- pieStartAngle
+            }
             attrs2 <- list(style=paste("stroke-width:0;stroke:none;fill:", geneColors[[j]], sep=""))
             if (!appliedTransform && "transform" %in% names(attrs)) {
               attrs2[["transform"]] <- attrs[["transform"]]
             }
-            xs <- cx + r*cos(alpharad*(j-1) + alpharad0)
-            ys <- cy + r*sin(alpharad*(j-1) + alpharad0)
-            x  <- cx + r*cos(alpharad*j + alpharad0)
-            y  <- cy + r*sin(alpharad*j + alpharad0)
+            if (pieClockwise) {
+              j.in.pie <- j
+            } else {
+              j.in.pie <- nconds - j + 1
+            }
+            xs <- cx + r*cos(alpharad*(j.in.pie-1) + alpharad0)
+            ys <- cy + r*sin(alpharad*(j.in.pie-1) + alpharad0)
+            x  <- cx + r*cos(alpharad*j.in.pie + alpharad0)
+            y  <- cy + r*sin(alpharad*j.in.pie + alpharad0)
             if (nconds > 1) {
               elementType <- "path"
               attrs2[["d"]] <- paste("M ", xs, ",", ys, " A ", r, ",", r, " ", alphadeg,

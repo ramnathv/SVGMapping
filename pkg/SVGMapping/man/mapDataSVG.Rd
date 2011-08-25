@@ -17,7 +17,8 @@ mapDataSVG(svg, numData, tooltipData=numData,
            mode="fill", what="*",
            geneAttribute="inkscape:label",
            col=microarrayColors, NA.color="#999999", colrange=c(-2,2),
-           annotation=NULL, fillAngle=NULL)
+           annotation=NULL,
+           fillAngle=NULL, pieStartAngle=NULL, pieClockwise=TRUE)
 }
 \arguments{
 \item{svg}{SVG data (an \code{XMLInternalDocument}). The variable will be modified in place.}
@@ -38,9 +39,7 @@ because we need to compute a color for background in the tooltip window.}
   \item{If you only want a tooltip window use "tooltip-only".}
   \item{It is also possible to display pie charts (set to "pie") that show different conditions (columns in \code{numData}),
   in which case the SVG elements with the labels are expected to be circles or Inkscape-pseudo-circles
-  (paths with sodipodi:cx/cy/rx attributes).
-  If there are two conditions, the left part is 1 and the right is 2. For more that two, the circle works like a clock
-  (starts at 12 o'clock and goes clockwise).}
+  (paths with sodipodi:cx/cy/rx attributes).}
   \item{An alternative to pie charts for multi-experiment mode is to fill objects with several color stripes.
   If you want to do that, use "fill" with a multi-column matrix for \code{numData}.}
   \item{The "partial-fill" mode makes it possible to display partially filled flasks where the liquid level is
@@ -58,6 +57,14 @@ because we need to compute a color for background in the tooltip window.}
 \item{annotation}{A function that, when given an gene (ie. a row name in numData) returns a list with fields \code{name} and \code{description} that are used for the tooltip window. Alternatively, you can give a matrix with genes as row names and a \code{name} and \code{description} column that work as just explained. There is also an optional \code{url} field that, if present, is the URL to go to when the SVG object is cliked.}
 \item{fillAngle}{Only used in "partial-fill" and multi-experiment "fill" modes to choose the filling angle.
 In "partial-fill" the default is -pi/2 (vertical going up) and in "fill" it is 0 (horizontal going right).}
+\item{pieStartAngle}{Only used in pie mode, to choose at what angle to start drawing the pie.
+The unit is radians, and 0 is the angle pointing right (like in trigonometry convention).
+If not specified, the following rule is used:
+If there are two conditions, the left part of the pie is 1 and the right is 2, therefore the angle is pi/2.
+For more than two, the circle works like a clock (starts at 12 o'clock and goes clockwise),
+therefore the angle is -pi/2.}
+\item{pieClockwise}{The circular direction of the pie (pie mode only). Set to TRUE for clockwise (the default) or FALSE
+for anticlockwise (like in trigonometry).}
 }
 \note{
   Although this function was created to display microarray data with gene labels in mind, it can be applied
@@ -82,6 +89,12 @@ mysvg <- loadSVG(system.file("extdata/example.svg", package="SVGMapping"))
 logratios <- yeastExprData
 mapDataSVG(mysvg, logratios, tooltipData=ifelse(logratios>=0, 2^(logratios), -2^-logratios), mode="pie", annotation=yeastAnnotMatrix)
 saveSVG(mysvg, file="output2.svg")
+
+# Instead of drawing pies like clocks (start at 12 o'clock and go clockwise),
+# draw them using the trigonometry convention (start on the right and anticlockwise).
+mysvg <- loadSVG(system.file("extdata/example.svg", package="SVGMapping"))
+mapDataSVG(mysvg, yeastExprData, mode="pie", annotation=yeastAnnotMatrix, pieStartAngle=0, pieClockwise=FALSE)
+saveSVG(mysvg, file="output2b.svg")
 
 # Filling erlemeyers
 mysvg <- loadSVG(system.file("extdata/example2.svg", package="SVGMapping"))
