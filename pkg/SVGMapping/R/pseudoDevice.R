@@ -62,7 +62,11 @@ devSVGMapping <- function(template, attribute.name="@inkscape:label",
                   "target.value" = attribute.value,
                   "rplot" = .dev.rplot
                   )
-  .addDeviceInfo(dev.cur(), devinfo)
+  devid <- dev.cur()
+  .addDeviceInfo(devid, devinfo)
+
+  ## return the device ID
+  return(invisible(devid))
 }
 
 includeSVG <- function(template, file,
