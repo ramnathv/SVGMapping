@@ -128,11 +128,21 @@ includeSVG <- function(template, file,
   
   ## 2 - Get Dimensions
   s <- xmlRoot(rplot.svg)
-  rplot.x <- .toUserUnit(xmlGetAttr(s, "x", "0"))
-  rplot.y <- .toUserUnit(xmlGetAttr(s, "y", "0"))
-  rplot.w <- .toUserUnit(xmlGetAttr(s, "width", "0"))
-  rplot.h <- .toUserUnit(xmlGetAttr(s, "height", "0"))
+  viewBox <- getAttributeSVG(s, "viewBox")
+  if (!is.null(viewBox)) {
+    viewBox <- as.numeric(strsplit(viewBox, " ")[[1]])
+    rplot.x <- viewBox[1]
+    rplot.y <- viewBox[2]
+    rplot.w <- viewBox[3]
+    rplot.h <- viewBox[4]
+  } else {
+    rplot.x <- .toUserUnit(xmlGetAttr(s, "x", "0"))
+    rplot.y <- .toUserUnit(xmlGetAttr(s, "y", "0"))
+    rplot.w <- .toUserUnit(xmlGetAttr(s, "width", "0"))
+    rplot.h <- .toUserUnit(xmlGetAttr(s, "height", "0"))
+  }
   rplot.nodes <- xmlChildren(s)
+
 
   ## check
   if(length(rplot.nodes) == 0) {
