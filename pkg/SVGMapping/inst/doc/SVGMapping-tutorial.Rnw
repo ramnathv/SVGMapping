@@ -235,7 +235,7 @@ mapDataSVG(mysvg,
 @ 
 
 Finally we save the modified SVG file in the current directory under the name
-\textit{'output3.svg'} (see figure \ref{fig:screenshot3}).
+\textit{'output3.svg'} (see figure~\ref{fig:screenshot3}).
 
 <<eval=FALSE,keep.source=TRUE>>=
 saveSVG(mysvg, file="output3.svg")
@@ -365,6 +365,8 @@ saveSVG(mysvg, file="output2.svg")
 \textit{Advice}: To avoid confusing the user with many irrelevant colors, you might want
 to replace log-ratios that are not significant by zeros in order to have them displayed in white.
 
+More advaned settings (like which section of the pie is the first value) are available.
+Pleaser refer to the mapDataSVG manual page.
 
 \subsection{Color stripes}
 
@@ -388,11 +390,6 @@ saveSVG(mysvg, file="output5.svg")
 As you can see, no mode is specified so the \textit{'fill'} mode is used by default.
 In the case of a multi-column data matrix, it will automatically switch
 to color stripes. It can be seen as a generalization of the \textit{'fill'} mode.
-Note, however, that color stripes are implemented as gradients while
-simple color filling is just a color specification. Therefore only the
-single condition \textit{'fill'} mode can be used as a pre-coloring step if
-followed by the \textit{'partial-fill'} mode.
-
 
 \section{Advanced settings}
 
@@ -480,6 +477,25 @@ mapDataSVG(mysvg, logratios, tooltipData=ifelse(logratios>=0, 2^(logratios), -2^
 showSVG(mysvg)
 @
 \[ \includegraphics[width=10cm]{colors4.png} \]
+
+\subsection{Multiple object changes}
+If you want to apply SVGMapping several times to the same object, be careful.
+Some mapDataSVG modes only perform simple modifications (color change, opacity change)
+and can therefore be combined (you can call mapDataSVG several times to modify the same objects).
+But other more advanced modes, tipically those that create new SVG shapes (like pie, stripes, partial-fill),
+cannot be followed by other changes on the same objects. For example, if you want to have erlenmeyers filled with
+a color and level both depending on the data, you need to change the color and then set the filling level.
+Doing it the other way round will not work.
+
+If you want to try strange combinations (combining stripes with partial-fill, or pie with partial-fill),
+please be aware that, although it might work, you cannot expect it to continue working it later releases of SVGMapping,
+as we don't include such cases in our tests.
+
+If you want to do more complicated things that what we provide, keep in mind that SVGMapping is not a general
+SVG generation tool. However you might still find it useful as you can both use SVGMapping and modify the SVG (XML) tree
+manually using the R XML library (the object retruned by loadSVG is a modifiable XMLInternalDocument object from the
+R XML library).
+
 
 
 \bibliographystyle{plain}
