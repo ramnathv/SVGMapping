@@ -111,9 +111,10 @@ setTextSVG <- function(svg, searchAttributeValue, text, searchAttribute="inkscap
 
 addLinkSVG <- function(node, url) {
   a <- newXMLNode("a", attrs=list("xlink:href"=url, target="_blank"), .children=list(node), namespaceDefinitions=c(xlink="http://www.w3.org/1999/xlink"))
-  addSibling(node, a)
+  a <- addSibling(node, a)[[1]]
   removeNodes(node)
-  invisible(NULL)
+  new.node <- xmlChildren(a)[[1]]
+  return(new.node)
 }
 
 addLinkByLabelSVG <- function(svg, searchAttributeValue, url, what="*", searchAttribute = "inkscape:label") {
@@ -197,7 +198,7 @@ mapDataSVG <- function(svg, numData, tooltipData=numData,
     }
     return(sapply(v, f))
   }
-  addToolTip <- if (is.null(tooltipData)) function(...) { NULL } else function(node, gene, geneColors) {
+  addToolTip <- if (is.null(tooltipData)) function(node, ...) { return(node) } else function(node, gene, geneColors) {
     displayedFoldChanges <- tooltipData[gene,]
     displayedFoldChanges <- as.character(displayedFoldChanges)
     displayedFoldChanges[is.na(displayedFoldChanges)] <- "NA"
@@ -211,10 +212,9 @@ mapDataSVG <- function(svg, numData, tooltipData=numData,
     addJavaScriptCallBack(node, "onmouseover", paste("displayAnnotation(", paste(jsargs, collapse=", "), ")", sep=""))
     addJavaScriptCallBack(node, "onmouseout", "hideAnnotation(evt)")
     if (!is.null(annot) && !is.null(annot$url)) {
-      addLinkSVG(node, annot$url)
-      #setAttributeSVG(node, "onclick", paste("window.open('", annot$url,  "')", sep=""))
+      node <- addLinkSVG(node, annot$url)
     }
-    return(invisible())
+    return(node)
   }
   if (mode == "fill") {
     if (ncol(numData) < 2) {
@@ -224,7 +224,7 @@ mapDataSVG <- function(svg, numData, tooltipData=numData,
         if (gene %in% rownames(numData)) {
           geneColor <- getGeneColors(gene)
           setStyleSVG(node, "fill", geneColor)
-          addToolTip(node, gene, geneColor)
+          node <- addToolTip(node, gene, geneColor)
         }
       }
     } else {
@@ -269,7 +269,7 @@ mapDataSVG <- function(svg, numData, tooltipData=numData,
           gradient <- newXMLNode("linearGradient", attrs=list(id=gradient.id, x1=x1, x2=x2, y1=y1, y2=y2), .children=gradient.children)
           addChildren(defs, kids=list(gradient))
           setStyleSVG(node, "fill", paste("url(#", gradient.id, ")", sep=""))
-          addToolTip(node, gene, geneColors)
+          node <- addToolTip(node, gene, geneColors)
         }
       }
     }
@@ -280,7 +280,7 @@ mapDataSVG <- function(svg, numData, tooltipData=numData,
       if (gene %in% rownames(numData)) {
         geneColor <- getGeneColors(gene)
         setStyleSVG(node, "stroke", geneColor)
-        addToolTip(node, gene, geneColor)
+        node <- addToolTip(node, gene, geneColor)
       }
     }
   } else if (mode == "pie") {
@@ -316,6 +316,11 @@ mapDataSVG <- function(svg, numData, tooltipData=numData,
         }
         # ok means we can use this element as a circle to put a pie chart in it
         if (ok) {
+          # Add a <g> element to group the original shape with the pie parts
+          new.group.node <- newXMLNode("g", .children=list(node))
+          new.group.node <- addSibling(node, new.group.node)[[1]]
+          removeNodes(node)
+          node <- xmlChildren(new.group.node)[[1]]
           if ("transform" %in% names(attrs) && grepl("^matrix\\([^\\(]+\\)$", attrs[["transform"]])) {
             appliedTransform = TRUE
             # We are going to apply the transform matrix manually
@@ -336,6 +341,8 @@ mapDataSVG <- function(svg, numData, tooltipData=numData,
             # We will simply copy the transform instruction. (will work if it is a translation)
           }
           # Now build the pie chart
+          pie.node <- newXMLNode("g")
+          addSibling(node, pie.node, after=FALSE)
           for (j in seq(along=geneColors)) {
             if (is.null(pieStartAngle)) {
               alpharad0 <- if (nconds > 2) -pi/2 else pi/2
@@ -366,13 +373,18 @@ mapDataSVG <- function(svg, numData, tooltipData=numData,
               attrs2[["r"]] <- r
             }
             pathNode <- newXMLNode(elementType, attrs=attrs2)
-            addSibling(node, kids=list(pathNode), after=FALSE)
+            addChildren(pie.node, pathNode)
           }
         
           # Make the original circle transparent so the pie chart can be seen
           setStyleSVG(node, "fill-opacity", 0)
           # Add tooltip to the circle
-          addToolTip(node, gene, geneColors)
+          node <- addToolTip(node, gene, geneColors)
+          # Add animations
+          if (animations) {
+            addJavaScriptCallBack(node, "onmouseover", "animatePie(evt)")
+            addJavaScriptCallBack(node, "onmouseout", "stopAnimation()")
+          }
         }
       }
     }
@@ -381,7 +393,7 @@ mapDataSVG <- function(svg, numData, tooltipData=numData,
       gene <- xmlGetAttr(node, geneAttribute)
       if (gene %in% rownames(numData)) {
         geneColor <- getGeneColors(gene)
-        addToolTip(node, gene, geneColor)
+        node <- addToolTip(node, gene, geneColor)
       }
     }
   } else if (mode == "fill-opacity") {

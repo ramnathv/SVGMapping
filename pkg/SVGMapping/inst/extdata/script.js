@@ -131,25 +131,42 @@ function hideAnnotation(evt)
 
 // Animation engine
 
-var timerIncrement = 10
-var currentAnimation = null
+var AnimationType = {
+	None:0,
+	PartialFill:1,
+	Pie:2
+}
+
+var currentAnimation = AnimationType.None
+
+// partial-fill animation
 var offset1 = null
 var offset2 = null
 var stop1 = null
 var stop2 = null
-var deltaOffset = 0.1
+var deltaOffset = 1
+var partialFillDeltaT = 10
+
+// pie animation
+var pieParts = null
+var currentPart = 0
+var pieDeltaT = null
 
 function stopAnimation() {
-	if (currentAnimation == "partial-fill") {
+	if (currentAnimation == AnimationType.PartialFill) {
 		// end animation: restore original values
 		stop1.offset.baseVal = offset1
 		stop2.offset.baseVal = offset2
-		currentAnimation = null
+	} else if (currentAnimation == AnimationType.Pie) {
+		for (var i=0; i<pieParts.length; i++) {
+			pieParts[i].setAttributeNS(null, "visibility", "visible")
+		}
 	}
+	currentAnimation = AnimationType.None
 }
 
 function nextAnimationStep() {
-	if (currentAnimation == "partial-fill") {
+	if (currentAnimation == AnimationType.PartialFill) {
 		var currentOffset = stop1.offset.baseVal
 		currentOffset += deltaOffset
 		if (currentOffset > offset1) {
@@ -158,9 +175,58 @@ function nextAnimationStep() {
 			// continue animation
 			stop1.offset.baseVal = currentOffset
 			stop2.offset.baseVal = currentOffset
-			setTimeout("nextAnimationStep()", timerIncrement)
+			setTimeout("nextAnimationStep()", partialFillDeltaT)
+		}
+	} else if (currentAnimation == AnimationType.Pie) {
+		if (currentPart < pieParts.length - 1) {
+			pieParts[currentPart].setAttributeNS(null, "visibility", "visible")
+			currentPart++
+			setTimeout("nextAnimationStep()", pieDeltaT)
+		} else {
+			stopAnimation()
 		}
 	}
+}
+
+function animatePie(evt) {
+	// stop any already running animation
+	stopAnimation()
+	var element = evt.target
+	var g = element.parentNode
+	if (g.tagName == "a") {
+		// we have a link, so go up again
+		g = g.parentNode
+	}
+	var g2 = null
+	for (var i=0; i<g.childNodes.length; i++) {
+		var child = g.childNodes[i]
+		if (child.tagName == "g") {
+			g2 = child
+		}
+	}
+	if (g2 == null) return
+	// g2 is a <g> element containing the pie parts
+	pieParts = new Array()
+	for (var i=0; i<g2.childNodes.length; i++) {
+		var child = g2.childNodes[i]
+		if (child.tagName == "path") {
+			pieParts.push(child)
+		}
+	}
+	if (pieParts.length < 2) {
+		// pie has only one section, don't run animation
+		pieParts = null
+		return
+	}
+	// we are decided to do run animation
+	currentAnimation = AnimationType.Pie
+	// hide all parts
+	for (var i=0; i<pieParts.length; i++) {
+		pieParts[i].setAttributeNS(null, "visibility", "hidden")
+	}
+	currentPart = 0
+	pieDeltaT = 500/pieParts.length
+	setTimeout("nextAnimationStep()", pieDeltaT)
 }
 
 function animatePartialFill(evt) {
@@ -181,7 +247,7 @@ function animatePartialFill(evt) {
 			k++
 		}
 	}
-	currentAnimation = "partial-fill"
+	currentAnimation = AnimationType.PartialFill
 	// save real values
 	offset1 = stop1.offset.baseVal
 	offset2 = stop2.offset.baseVal
@@ -190,5 +256,5 @@ function animatePartialFill(evt) {
 	deltaOffset = offset1 / 20
 	if (deltaOffset == 0)
 		deltaOffset = 0.01
-	nextAnimationStep()
+	setTimeout("nextAnimationStep()", partialFillDeltaT)
 }
