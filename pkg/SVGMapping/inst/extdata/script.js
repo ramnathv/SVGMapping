@@ -192,11 +192,15 @@ var stripes = null
 var originalStopStyles = null
 var stripesDeltaT = null
 
+function changeStopOffset(stopNode, newOffset) {
+	stopNode.setAttributeNS(null, "offset", newOffset)
+}
+
 function stopAnimation() {
 	if (currentAnimation == AnimationType.PartialFill) {
 		// end animation: restore original values
-		stop1.offset.baseVal = offset1
-		stop2.offset.baseVal = offset2
+		changeStopOffset(stop1, offset1)
+		changeStopOffset(stop2, offset2)
 	} else if (currentAnimation == AnimationType.Pie) {
 		for (var i=0; i<pieParts.length; i++) {
 			pieParts[i].setAttributeNS(null, "visibility", "visible")
@@ -223,9 +227,8 @@ function nextAnimationStep() {
 		if (currentOffset > offset1) {
 			stopAnimation()
 		} else {
-			// continue animation
-			stop1.offset.baseVal = currentOffset
-			stop2.offset.baseVal = currentOffset
+			changeStopOffset(stop1, currentOffset)
+			changeStopOffset(stop2, currentOffset)
 			setTimeout("nextAnimationStep()", partialFillDeltaT)
 		}
 	} else if (currentAnimation == AnimationType.Pie) {
@@ -366,8 +369,8 @@ function animatePartialFill(evt) {
 	// save real values
 	offset1 = stop1.offset.baseVal
 	offset2 = stop2.offset.baseVal
-	stop1.offset.baseVal = 0
-	stop2.offset.baseVal = 0
+	changeStopOffset(stop1, 0)
+	changeStopOffset(stop2, 0)
 	deltaOffset = offset1 / 20
 	if (deltaOffset == 0)
 		deltaOffset = 0.01
