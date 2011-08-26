@@ -18,7 +18,8 @@ mapDataSVG(svg, numData, tooltipData=numData,
            geneAttribute="inkscape:label",
            col=microarrayColors, NA.color="#999999", colrange=c(-2,2),
            annotation=NULL,
-           fillAngle=NULL, pieStartAngle=NULL, pieClockwise=TRUE)
+           fillAngle=NULL, pieStartAngle=NULL, pieClockwise=TRUE,
+           animations=TRUE)
 }
 \arguments{
 \item{svg}{SVG data (an \code{XMLInternalDocument}). The variable will be modified in place.}
@@ -64,6 +65,7 @@ For more than two, the circle works like a clock (starts at 12 o'clock and goes 
 therefore the angle is -pi/2.}
 \item{pieClockwise}{The circular direction of the pie (pie mode only). Set to TRUE for clockwise (the default) or FALSE
 for anticlockwise (like in trigonometry).}
+\item{animations}{Whether or not to add JavaScript animations.}
 }
 \note{
   Although this function was created to display microarray data with gene labels in mind, it can be applied

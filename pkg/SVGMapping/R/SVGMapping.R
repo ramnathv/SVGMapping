@@ -270,6 +270,11 @@ mapDataSVG <- function(svg, numData, tooltipData=numData,
           addChildren(defs, kids=list(gradient))
           setStyleSVG(node, "fill", paste("url(#", gradient.id, ")", sep=""))
           node <- addToolTip(node, gene, geneColors)
+          # Add animations
+          if (animations) {
+            addJavaScriptCallBack(node, "onmouseover", "animateStripes(evt)")
+            addJavaScriptCallBack(node, "onmouseout", "stopAnimation()")
+          }
         }
       }
     }

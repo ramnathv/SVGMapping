@@ -1,5 +1,6 @@
 // SVGMapping JavaScript script
 
+
 // General functions
 
 var svgNS = "http://www.w3.org/2000/svg"
@@ -31,6 +32,8 @@ function findElementByURL(url) {
 	}
 	return(null)
 }
+
+
 
 // Tooltip system
 
@@ -164,7 +167,8 @@ function hideAnnotation(evt)
 var AnimationType = {
 	None:0,
 	PartialFill:1,
-	Pie:2
+	Pie:2,
+	Stripes:3
 }
 
 var currentAnimation = AnimationType.None
@@ -179,8 +183,14 @@ var partialFillDeltaT = 10
 
 // pie animation
 var pieParts = null
-var currentPart = 0
+var currentPart = null
 var pieDeltaT = null
+
+// stripes animation
+var currentStripe = null
+var stripes = null
+var originalStopStyles = null
+var stripesDeltaT = null
 
 function stopAnimation() {
 	if (currentAnimation == AnimationType.PartialFill) {
@@ -191,6 +201,17 @@ function stopAnimation() {
 		for (var i=0; i<pieParts.length; i++) {
 			pieParts[i].setAttributeNS(null, "visibility", "visible")
 		}
+		pieParts = null
+		currentPart = null
+		pieDeltaT = null
+	}  else if (currentAnimation == AnimationType.Stripes) {
+		for (var i=0; i<stripes.length; i++) {
+			stripes[i].setAttributeNS(null, "style", originalStopStyles[i])
+		}
+		currentStripe = null
+		stripes = null
+		originalStopStyles = null
+		stripesDeltaT = null
 	}
 	currentAnimation = AnimationType.None
 }
@@ -215,7 +236,50 @@ function nextAnimationStep() {
 		} else {
 			stopAnimation()
 		}
+	} else if (currentAnimation == AnimationType.Stripes) {
+		if (currentStripe < stripes.length - 1) {
+			stripes[currentStripe].setAttributeNS(null, "style", originalStopStyles[currentStripe])
+			stripes[currentStripe+1].setAttributeNS(null, "style", originalStopStyles[currentStripe+1])
+			currentStripe += 2
+			setTimeout("nextAnimationStep()", stripesDeltaT)
+		} else {
+			stopAnimation()
+		}
 	}
+}
+
+function animateStripes(evt) {
+	// stop any already running animation
+	stopAnimation()
+	var element = evt.target
+	var gradientId = element.style.fill
+	if (gradientId == null) return
+	var gradient = findElementByURL(element.style.fill)
+	if (gradient == null) return
+	
+	stripes = new Array()
+	for (var i=0; i<gradient.childNodes.length; i++) {
+		var child = gradient.childNodes[i]
+		if (child.tagName == "stop") {
+			stripes.push(child)
+		}
+	}
+	if (stripes.length < 2) {
+		// only 1 stripe, don't run animation
+		stripes = null
+		return
+	}
+	// we are decided to do run animation
+	currentAnimation = AnimationType.Stripes
+	// hide all parts
+	originalStopStyles = new Array()
+	for (var i=0; i<stripes.length; i++) {
+		originalStopStyles.push(stripes[i].getAttributeNS(null, "style"))
+		stripes[i].setAttributeNS(null, "style", "stop-opacity:0")
+	}
+	currentStripe = 0
+	stripesDeltaT = 500/(stripes.length/2)
+	setTimeout("nextAnimationStep()", stripesDeltaT)
 }
 
 function animatePie(evt) {
