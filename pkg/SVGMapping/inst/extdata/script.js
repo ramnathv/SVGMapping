@@ -2,6 +2,8 @@
 
 // General functions
 
+var svgNS = "http://www.w3.org/2000/svg"
+
 // Find the element whatever the form of url:
 // can be: id, #id, url(#id)
 function findElementByURL(url) {
@@ -9,8 +11,19 @@ function findElementByURL(url) {
 	var element = svgDocument.getElementById(url)
 	if (element != null) return element
 	if (url.substring(0,3) == "url") {
-		element = svgDocument.getElementById(url.substring(5, url.length-1))
-		if (element != null) return element
+		var k = url.indexOf("#")
+		if (k >= 0) {
+			var s = url.substring(k+1)
+			k = s.indexOf("\"")
+			if (k < 0) {
+				k = s.indexOf(")")
+			}
+			if (k >= 0) {
+				s = s.substring(0, k)
+				element = svgDocument.getElementById(s)
+				if (element != null) return element
+			}
+		}
 	}
 	if (url.charAt(0) == '#') {
 		element = svgDocument.getElementById(url.substring(1))
@@ -31,8 +44,6 @@ function init(evt)
 
 function displayAnnotation(evt, name, description, foldchanges, colors)
 {
-	var svgNS = "http://www.w3.org/2000/svg";
-
 	var n = foldchanges.length
 
 	var h = 110;
@@ -221,6 +232,7 @@ function animatePie(evt) {
 		var child = g.childNodes[i]
 		if (child.tagName == "g") {
 			g2 = child
+			break
 		}
 	}
 	if (g2 == null) return
@@ -254,8 +266,8 @@ function animatePartialFill(evt) {
 	var element = evt.target
 	
 	// find mask
-	if (element.style.mask == null) return
-	var mask = findElementByURL(element.style.mask)
+	if (!element.hasAttributeNS(null, "mask")) return
+	var mask = findElementByURL(element.getAttributeNS(null, "mask"))
 	if (mask == null) return
 	
 	// find mask path
@@ -264,6 +276,7 @@ function animatePartialFill(evt) {
 		var child = mask.childNodes[i]
 		if (child instanceof SVGElement) {
 			maskChild = child
+			break
 		}
 	}
 	if (maskChild == null) return

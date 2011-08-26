@@ -486,7 +486,7 @@ mapDataSVG <- function(svg, numData, tooltipData=numData,
         removeAttributes(node.copy, "id")
         
         # mask only the original node
-        setStyleSVG(node, "mask", paste("url(#", mask.id, ")", sep=""))
+        setAttributeSVG(node, "mask", paste("url(#", mask.id, ")", sep=""))
         # remove its stroke
         setStyleSVG(node, "stroke-opacity", 0)
         
