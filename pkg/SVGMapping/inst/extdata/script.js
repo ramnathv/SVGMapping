@@ -1,5 +1,24 @@
 // SVGMapping JavaScript script
 
+// General functions
+
+// Find the element whatever the form of url:
+// can be: id, #id, url(#id)
+function findElementByURL(url) {
+	if (url == null) return null
+	var element = svgDocument.getElementById(url)
+	if (element != null) return element
+	if (url.substring(0,3) == "url") {
+		element = svgDocument.getElementById(url.substring(5, url.length-1))
+		if (element != null) return element
+	}
+	if (url.charAt(0) == '#') {
+		element = svgDocument.getElementById(url.substring(1))
+		if (element != null) return element
+	}
+	return(null)
+}
+
 // Tooltip system
 
 var annotElements = new Array()
@@ -233,8 +252,27 @@ function animatePartialFill(evt) {
 	// stop any already running animation
 	stopAnimation()
 	var element = evt.target
-	var gradientId = element.style.fill
-	var gradient = svgDocument.getElementById(gradientId.substring(1,gradientId.length))
+	
+	// find mask
+	if (element.style.mask == null) return
+	var mask = findElementByURL(element.style.mask)
+	if (mask == null) return
+	
+	// find mask path
+	var maskChild = null
+	for (var i=0; i<mask.childNodes.length; i++) {
+		var child = mask.childNodes[i]
+		if (child instanceof SVGElement) {
+			maskChild = child
+		}
+	}
+	if (maskChild == null) return
+	
+	// find mask gradient
+	var gradientId = maskChild.style.fill
+	if (gradientId == null) return
+	var gradient = findElementByURL(maskChild.style.fill)
+	if (gradient == null) return
 	var k = 1
 	for (var i=0; i<gradient.childNodes.length; i++) {
 		var child = gradient.childNodes[i]

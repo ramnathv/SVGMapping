@@ -43,8 +43,7 @@ because we need to compute a color for background in the tooltip window.}
   \item{An alternative to pie charts for multi-experiment mode is to fill objects with several color stripes.
   If you want to do that, use "fill" with a multi-column matrix for \code{numData}.}
   \item{The "partial-fill" mode makes it possible to display partially filled flasks where the liquid level is
-  the numeric data in \code{numData}. This mode works by creating a gradient with a sharp transition between
-  the original fill color and transparent.}
+  the numeric data in \code{numData}. This mode works by creating an SVG mask.}
   \item{The last modes are "fill-opacity", "stroke-opacity" and "stroke-width" that set the attribute their name says.
   For these modes, the values in \code{numData} are simply assumed to be the value to set the SVG attribute to.}
   }

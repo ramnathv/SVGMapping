@@ -433,18 +433,22 @@ mapDataSVG <- function(svg, numData, tooltipData=numData,
     for (node in nodes) {
       gene <- xmlGetAttr(node, geneAttribute)
       if (gene %in% rownames(numData)) {
+        # Add a <g> element to group the original shape with the pie parts
+        new.group.node <- newXMLNode("g", .children=list(node))
+        new.group.node <- addSibling(node, new.group.node)[[1]]
+        removeNodes(node)
+        node <- xmlChildren(new.group.node)[[1]]
+        
         geneValue <- getGeneValues(gene)
         if (geneValue > 1) geneValue <- 1
         if (geneValue < 0) geneValue <- 0
-        originalColor <- getStyleSVG(node, "fill")
-        if (is.null(originalColor) || grepl("^url", originalColor))
-          originalColor < "#0000FF"
         gradient.id <- paste(getAttributeSVG(node, "id"), "-gradient", sep="")
+        mask.id <- paste(getAttributeSVG(node, "id"), "-mask", sep="")
         gradient.children <- list()
-        gradient.children[[1]] <- newXMLNode("stop", attrs=list(offset=0, style=paste("stop-color:", originalColor, ";stop-opacity:1", sep="")))
-        gradient.children[[2]] <- newXMLNode("stop", attrs=list(offset=geneValue, style=paste("stop-color:", originalColor, ";stop-opacity:1", sep="")))
-        gradient.children[[3]] <- newXMLNode("stop", attrs=list(offset=geneValue, style=paste("stop-color:", originalColor, ";stop-opacity:0", sep="")))
-        gradient.children[[4]] <- newXMLNode("stop", attrs=list(offset=1, style=paste("stop-color:", originalColor, ";stop-opacity:0", sep="")))
+        gradient.children[[1]] <- newXMLNode("stop", attrs=list(offset=0, style=paste("stop-color:white;stop-opacity:1", sep="")))
+        gradient.children[[2]] <- newXMLNode("stop", attrs=list(offset=geneValue, style=paste("stop-color:white;stop-opacity:1", sep="")))
+        gradient.children[[3]] <- newXMLNode("stop", attrs=list(offset=geneValue, style=paste("stop-color:white;stop-opacity:0", sep="")))
+        gradient.children[[4]] <- newXMLNode("stop", attrs=list(offset=1, style=paste("stop-color:white;stop-opacity:0", sep="")))
         x <- cos(fillAngle)
         y <- sin(fillAngle)
         if (x < 0) {
@@ -467,7 +471,25 @@ mapDataSVG <- function(svg, numData, tooltipData=numData,
         y2 <- paste(round(y2*100), "%", sep="")
         gradient <- newXMLNode("linearGradient", attrs=list(id=gradient.id, x1=x1, x2=x2, y1=y1, y2=y2), .children=gradient.children)
         addChildren(defs, kids=list(gradient))
-        setStyleSVG(node, "fill", paste("url(#", gradient.id, ")", sep=""))
+        
+        # make mask
+        masknode <- newXMLNode("mask", .children=list(node))
+        addSibling(node, masknode, after=FALSE)
+        setAttributeSVG(masknode, "id", mask.id)
+        node.copy.in.mask <- xmlChildren(masknode)[[1]]
+        setStyleSVG(node.copy.in.mask, "fill", paste("url(#", gradient.id, ")", sep=""))
+        removeAttributes(node.copy.in.mask, "id")
+        
+        # make a copy of the node and put it above, so that the stroke is not masked
+        node.copy <- addSibling(node, xmlClone(node), after=FALSE)[[1]]
+        setStyleSVG(node.copy, "fill-opacity", 0)
+        removeAttributes(node.copy, "id")
+        
+        # mask only the original node
+        setStyleSVG(node, "mask", paste("url(#", mask.id, ")", sep=""))
+        # remove its stroke
+        setStyleSVG(node, "stroke-opacity", 0)
+        
         if (animations) {
           addJavaScriptCallBack(node, "onmouseover", "animatePartialFill(evt)")
           addJavaScriptCallBack(node, "onmouseout", "stopAnimation()")
