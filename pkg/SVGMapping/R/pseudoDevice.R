@@ -59,10 +59,10 @@ devSVGMapping <- function(template, attribute.name="@inkscape:label",
   .dev.rplot <- paste(tempfile(pattern="rplot"), ".svg", sep="")
   if (.get(".cairo") == "cairoDevice") {
     Cairo_svg(filename=path.expand(.dev.rplot),
-              width=width, heigh=height, pointsize=pointsize)
+              width=width, height=height, pointsize=pointsize)
   } else {
     svg(filename=path.expand(.dev.rplot),
-        width=width, heigh=height, pointsize=pointsize)
+        width=width, height=height, pointsize=pointsize)
   }
 
   ## update device info
