@@ -41,7 +41,7 @@ devSVGMapping <- function(template, attribute.name="@inkscape:label",
   ## scan template..
   target.node <- getNodeSet(template,
                             paste("//svg:rect[",attribute.name,"='",
-                                  attribute.value,"']",sep=""))
+                                  attribute.value,"']",sep=""), namespaces=c(svg=svgNS))
   if(length(target.node) == 0)
     stop("Target Attribute not found..")
   target.node <- target.node[[1]]
@@ -89,7 +89,7 @@ includeSVG <- function(template, file,
   ## scan template..
   target.node <- getNodeSet(template,
                             paste("//svg:rect[",attribute.name,"='",
-                                  attribute.value,"']",sep=""))
+                                  attribute.value,"']",sep=""), namespaces=c(svg=svgNS))
   if(length(target.node) == 0)
     stop("Target Attribute not found..")
   target.node <- target.node[[1]]
