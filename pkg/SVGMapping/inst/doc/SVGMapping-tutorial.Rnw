@@ -477,7 +477,47 @@ saveSVG(mysvg, "pdev-output2.svg")
 \caption{\label{fig:screenshot7} Screenshot of the produced ``pdev-output2.svg'' file}
 \end{center}
 \end{figure}
- 
+
+
+
+\subsection{A more advanced example}
+The following example illustrates the use of several rectangles in which data is plotted using R
+and then included in the SVG file by SVGMapping.
+
+<<eval=FALSE>>=
+mysvg <- loadSVG(system.file("extdata/example3.svg", package="SVGMapping"))
+
+genes <- getLabelsSVG(mysvg)
+genes <- genes[grepl("^Y.+\\-plot$", genes)]
+genes <- sapply(strsplit(genes, "-", fixed=TRUE), function(x) x[[1]])
+
+timeValues <- c(0, 5, 10, 20, 60, 120)
+for (gene in genes) {
+  devSVGMapping(mysvg, attribute.value=paste(gene, "-plot", sep=""), width=1.5, height=1)
+  par(mar=c(0, 0, 2, 0))
+  shortGeneName <- strsplit(yeastAnnotMatrix[gene,"name"], " ", fixed=TRUE)[[1]]
+  shortGeneName <- shortGeneName[[length(shortGeneName)]]
+  ylims <- 1.2
+  image(c(timeValues[1],timeValues[length(timeValues)]), seq(-ylims,ylims,length.out=21),
+        matrix(seq(-ylims,ylims,length.out=20), nrow=1), col=microarrayColors, main=shortGeneName)
+  points(timeValues, yeastExprData[gene,], type="o")
+  dev.off()
+}
+
+logratios <- yeastExprData
+mapDataSVG(mysvg, logratios, tooltipData=ifelse(logratios>=0, 2^(logratios), -2^-logratios), mode="pie", annotation=yeastAnnotMatrix)
+
+showSVG(mysvg)
+@
+\begin{figure}[ht]\begin{center}
+\includegraphics[width=8cm]{multiplots.png}
+\caption{\label{fig:multiplots} Each small plot shows the expression of a gene as a function of time.
+The plots are generated with R and are included in the SVG file with SVGMapping.}
+\end{center}
+\end{figure}
+
+
+
 
 \section{Advanced settings}
 
