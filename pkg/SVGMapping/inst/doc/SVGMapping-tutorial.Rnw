@@ -392,6 +392,67 @@ As you can see, no mode is specified so the \textit{'fill'} mode is used by defa
 In the case of a multi-column data matrix, it will automatically switch
 to color stripes. It can be seen as a generalization of the \textit{'fill'} mode.
 
+\section{Pseudo devices}
+
+%% introduction
+Pseudo-device is a mechanism to include regular R graphics within a
+template. It allows to replace any rectangular shape with either the results of
+any set of R graphics commands or the content of any SVG file. In this section
+we will details both methods.
+
+\subsection{Substitute rectangular shapes with plots}
+
+%%
+As in all previous example we will start by loading a template. In this case it
+is a very sample sketch with one rectangle labelled \textit{Rplot1}. The sketch
+is included in the package and can be loaded using:
+
+<<eval=FALSE,keep.source=TRUE>>=
+mysvg <- loadSVG(system.file("extdata/device-example.svg", package="SVGMapping"))
+@ 
+
+Next we open a new graphics device using the \texttt{devSVGMapping}
+function. This function has almost the same syntax as the SVG cairo driver. The
+only difference is that we specify a template and a target rectangular shape
+(given is attribute name and value). Given we use the \textit{label}
+attribute to substitute the rectangle named \textit{Rplot1} we declare our
+device using the following instruction:
+
+<<eval=FALSE,keep.source=TRUE>>=
+devSVGMapping(mysvg, "@inkscape:label", "Rplot1") 
+@ 
+
+After this command all R graphics instruction will be \textit{redirected} to the
+target shape. Internally, we open an SVG device to a temporary file. 
+
+As a example we can plot a heatmap of the first 30 genes expression levels of
+the previous microarrays yeast dataset:
+
+<<eval=FALSE,source=TRUE>>=
+heatmap(yeastExprData[1:30,], col=microarrayColors, labCol=NA, scale="none")
+dev.off()
+@ 
+
+Finally \texttt{dev.off}  \textbf{must} be called to process and update the
+template. In practice the \textit{real} SVG device is closed and the temporary output file
+included in the template using the \texttt{includeSVG} function (see
+below). The modified template is either saved (using \texttt{saveSVG}) or open
+in a web browser (using \texttt{showSVG}).
+
+<<eval=FALSE,source=TRUE>>=
+saveSVG(mysvg, "pdev-output1.svg")
+@ 
+
+\begin{figure}[ht]\begin{center}
+\includegraphics{screenshot6.png}
+\caption{\label{fig:screenshot6} Screenshot of the produced ``pdev-output1.svg'' file}
+\end{center}
+\end{figure}
+
+\subsection{Include external SVG files}
+
+%% http://upload.wikimedia.org/wikipedia/commons/8/8f/DNA_replication_en.svg
+
 \section{Advanced settings}
 
 \subsection{Colors}\label{sec:colors}
