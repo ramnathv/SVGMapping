@@ -540,6 +540,20 @@ showSVG(mysvg)
 @
 \[ \includegraphics[width=10cm]{colors4.png} \]
 
+\subsection{Editing text content}
+You can use SVGMapping to dynamically change text content and add links.
+In the following example, we change the title from ``TCA cycle'' to ``Krebs cycle'',
+and add a link to the corresponding Wikipedia page.
+
+<<eval=FALSE,keep.source=TRUE>>=
+mysvg <- loadSVG(system.file("extdata/example.svg", package="SVGMapping"))
+setTextSVG(mysvg, "text3091", "Krebs cycle", searchAttribute="id")
+addLinkByLabelSVG(mysvg, "text3091", "http://en.wikipedia.org/wiki/TCA_cycle",
+                  searchAttribute="id")
+showSVG(mysvg)
+@
+\[ \includegraphics[width=8cm]{text.png} \]
+
 \subsection{Multiple object changes}
 If you want to apply SVGMapping several times to the same object, be careful.
 Some mapDataSVG modes only perform simple modifications (color change, opacity change)
