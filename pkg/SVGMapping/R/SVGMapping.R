@@ -26,6 +26,12 @@ load("inst/extdata/microarrayColors.rda")
 
 svgNS <- "http://www.w3.org/2000/svg"
 
+completeNamespaces <- function(svgdata) {
+  NS <- xmlNamespaceDefinitions(svgdata, simplify=TRUE)
+  NS[["svg"]] <- svgNS
+  return(NS)
+}
+
 computeExprColors <- function(X, col=microarrayColors, NA.color="#999999", a=-2, b=2) {
   satval <- 2
   n <- length(col)
@@ -92,7 +98,7 @@ getLabelsSVG <- function(svg, what="*", geneAttribute="inkscape:label") {
 }
 
 setTextSVG <- function(svg, searchAttributeValue, text, searchAttribute="inkscape:label") {
-  nodes <- getNodeSet(svg, paste("//svg:text[@", searchAttribute, "]", sep=""), namespaces=c(svg=svgNS))
+  nodes <- getNodeSet(svg, paste("//svg:text[@", searchAttribute, "]", sep=""), namespaces=completeNamespaces(svg))
   for (node in nodes) {
     attval <- getAttributeSVG(node, searchAttribute)
     if (attval == searchAttributeValue) {
@@ -233,7 +239,7 @@ mapDataSVG <- function(svg, numData, tooltipData=numData,
       ## Multi-color fill
       if (is.null(fillAngle))
         fillAngle <- 0
-      defs <- getNodeSet(svg, "//svg:defs", namespaces=c(svg=svgNS))
+      defs <- getNodeSet(svg, "//svg:defs", namespaces=completeNamespaces(svg))
       if (length(defs) == 0) stop("Missing defs node in SVG")
       defs <- defs[[1]]
       for (node in nodes) {
@@ -434,7 +440,7 @@ mapDataSVG <- function(svg, numData, tooltipData=numData,
     if (is.null(fillAngle))
       fillAngle <- -pi / 2
     if (ncol(numData)>1) stop("This mode is not compatible with multiple conditions")
-    defs <- getNodeSet(svg, "//svg:defs", namespaces=c(svg=svgNS))
+    defs <- getNodeSet(svg, "//svg:defs", namespaces=completeNamespaces(svg))
     if (length(defs) == 0) stop("Missing defs node in SVG")
     defs <- defs[[1]]
     for (node in nodes) {
@@ -542,7 +548,7 @@ addScriptSVG <- function(svg, script, id=NULL) {
   # Replace a script node if it has the same id
   replaced <- FALSE
   if (!is.null(id)) {
-    with.same.id <- getNodeSet(svg, paste("//svg:script[@id=\"", id, "\"]", sep=""), namespaces=c(svg=svgNS))
+    with.same.id <- getNodeSet(svg, paste("//svg:script[@id=\"", id, "\"]", sep=""), namespaces=completeNamespaces(svg))
     if (length(with.same.id) > 0) {
       replaceNodes(with.same.id[[1]], scriptnode)
       replaced <- TRUE
@@ -554,7 +560,7 @@ addScriptSVG <- function(svg, script, id=NULL) {
 }
 
 addDefinesSVG <- function(svg, nodes) {
-  defs <- getNodeSet(svg, "//svg:defs", namespaces=c(svg=svgNS))
+  defs <- getNodeSet(svg, "//svg:defs", namespaces=completeNamespaces(svg))
   if (length(defs) == 0) {
     defs <- newXMLNode("defs")
     addChildren(xmlRoot(svg), defs)
