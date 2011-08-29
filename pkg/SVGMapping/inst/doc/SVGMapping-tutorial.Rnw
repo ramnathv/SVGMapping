@@ -451,7 +451,33 @@ saveSVG(mysvg, "pdev-output1.svg")
 
 \subsection{Include external SVG files}
 
-%% http://upload.wikimedia.org/wikipedia/commons/8/8f/DNA_replication_en.svg
+Another way to perform substitution within a SVG file is using the
+\texttt{includeSVG} function. The idea is the same as previously. First, we
+provide a pair of attributes name and values to identify a rectangular shape within the
+template. Second, the shape is substituted with the content of a given SVG
+file. Still, a scaling operation on the included file is perform to match the
+target area. Thus, one has to be very cautious about aspect ratio constraints.
+
+As an illustratation of this function we will use the same template as
+above and fill the \textit{Rplot1} area with a DNA replication sketch taken
+from \textit{Wikimedia}.
+
+<<>>=
+## from: LadyofHats @Wikipedia -- copyleft
+dna_svg <- "http://upload.wikimedia.org/wikipedia/commons/8/8f/DNA_replication_en.svg"
+
+mysvg <- loadSVG(system.file("extdata/device-example.svg", package="SVGMapping"))
+includeSVG(template=mysvg, file=dna_svg, 
+           attribute.name="@inkscape:label", attribute.value="Rplot1")
+saveSVG(mysvg, "pdev-output2.svg")
+@ 
+
+\begin{figure}[ht]\begin{center}
+\includegraphics{screenshot7.png}
+\caption{\label{fig:screenshot7} Screenshot of the produced ``pdev-output2.svg'' file}
+\end{center}
+\end{figure}
+ 
 
 \section{Advanced settings}
 
