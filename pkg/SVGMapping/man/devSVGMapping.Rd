@@ -38,7 +38,7 @@ devSVGMapping(mysvg, "@inkscape:label", "Rplot1")
 plot(density(x=rnorm(100)))
 dev.off()
 
-showSVG(mysvg)
+\donttest{showSVG(mysvg)}
 }
 \keyword{graphics device}
 \seealso{

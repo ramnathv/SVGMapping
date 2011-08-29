@@ -23,7 +23,7 @@ mysvg <- loadSVG(system.file("extdata/device-example.svg", package="SVGMapping")
 ## with a density plot of a gaussian distribution
 includeSVG(mysvg, system.file("extdata/gnokii-Apple2.svg", package="SVGMapping"), "@inkscape:label", "Rplot1")
 
-showSVG(mysvg)
+\donttest{showSVG(mysvg)}
 }
 \seealso{
 Consider \code{\link{devSVGMapping}} for direct drawing using standard R graphics commands.
