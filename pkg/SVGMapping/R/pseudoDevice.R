@@ -27,7 +27,7 @@
 ## ---------------------------------------------
 
 devSVGMapping <- function(template, attribute.name="@inkscape:label",
-                          attribute.value="Rplot",width=10, height=8,
+                          attribute.value="Rplot", width, height,
                           pointsize=10) {
 
   ## check Cairo
@@ -45,6 +45,15 @@ devSVGMapping <- function(template, attribute.name="@inkscape:label",
   if(length(target.node) == 0)
     stop("Target Attribute not found..")
   target.node <- target.node[[1]]
+  
+  if (missing(width) || missing(height)) {
+    ## get target coordinates
+    target.w <- .toUserUnit(xmlGetAttr(target.node, "width", 10*90))
+    target.h <- .toUserUnit(xmlGetAttr(target.node, "height", 8*90))
+    # convert from default user units to inches
+    width <- target.w/90
+    height <- target.h/90
+  }
 
   ## init. SVG device
   .dev.rplot <- paste(tempfile(pattern="rplot"), ".svg", sep="")
