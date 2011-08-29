@@ -9,3 +9,4 @@ Description: This package allows you to display experimental data on a custom-ma
 License: BSD
 LazyLoad: yes
 Depends: R (>= 2.10.0), XML, grDevices, utils
+Suggests: cairoDevice
