@@ -100,9 +100,10 @@ The last step is straightforward: we use the \Rfunc{saveSVG()} function
 to store the altered template on the filesystem. Here this will create a file
 named \texttt{output1.svg} inside the current directory.  To view an SVG
 file, you can use a modern Web browser (\textit{ie} compliant with the latest
-W3C standards) that supports the SVG image format. Safari 5, Google Chrome or
-Firefox 4 are currently supported browsers that runs on Windows, OS/X and
-Linux. Another method is to use a dedicated drawing software such as Adobe
+W3C standards) that supports the SVG image format.
+Safari 5.1, Firefox 5, Chrome 11 and Internet Explorer 9
+are currently supported browsers that runs on Windows, OS/X and Linux.
+Another method is to use a dedicated drawing software such as Adobe
 Illustrator or Inkscape. Here one should see a drawing similar to the one on
 figure~\ref{fig:screenshot1}, with a tooltip window appearing when your mouse
 cursor is over the circles (\texttt{MDH1} on this figure) that depict genes.
