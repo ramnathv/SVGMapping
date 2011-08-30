@@ -16,11 +16,8 @@
       return("cairoDevice")
   
     ## 2 - CairoDevice package available
-    cairo.dev = find.package("cairoDevice", quiet=TRUE)
-    if(length(cairo.dev) > 0) {
-      ret=require("cairoDevice", quietly=TRUE)
-      if(ret) return("cairoDevice")
-    }
+    ret=require("cairoDevice", quietly=TRUE)
+    if(ret) return("cairoDevice")
   
     ## eop
     return(NULL)
