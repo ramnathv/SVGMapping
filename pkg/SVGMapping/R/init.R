@@ -22,6 +22,10 @@
     ## eop
     return(NULL)
   }
+
+  ## init. java env.
+  options("java.parameters" = c("-Djava.awt.headless=true", getOption("java.parameters")))
+   .jpackage(pkgname, lib.loc=libname)
   
   ## init. package env.
   .set("Templates.MetaData", list())

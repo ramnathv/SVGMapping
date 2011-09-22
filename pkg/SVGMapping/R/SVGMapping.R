@@ -152,7 +152,34 @@ mapDataSVG <- function(svg, numData, tooltipData=numData,
                        col=microarrayColors, NA.color="#999999", colrange=c(-2,2),
                        annotation=NULL,
                        fillAngle=NULL, pieStartAngle=NULL, pieClockwise=TRUE,
+                       angleRange=NULL,
                        animations=TRUE) {
+
+  ## -- local functions
+  getGeneColors <- function(gene) {
+    computeExprColors(numData[gene,], col=col,
+                      NA.color=NA.color, a=colrange[[1]], b=colrange[[2]])
+  }
+  getGeneValues <- function(gene) {
+    X <- as.character(numData[gene,])
+    X[is.na(X)] <- "0"
+    return(X)
+  }
+  addquotes <- function(v) {
+    f <- function(x) {
+      if (x == "null") {
+        "null"
+      } else {
+        x <- gsub("\\\\", "\\\\\\\\", x)
+        x <- gsub('"', '\\\\"', x)
+        x <- gsub("'", "\\\\'", x)
+        paste("'", x, "'", sep="")
+      }
+    }
+    return(sapply(v, f))
+  }
+
+  ## -- check & init.
   numData <- as.matrix(numData)
   if (ncol(numData) < 1) stop("numData must contain at least one column")
   if (! (mode %in% c("fill", "stroke", "pie", "tooltip-only"))) {
@@ -167,15 +194,6 @@ mapDataSVG <- function(svg, numData, tooltipData=numData,
     if (!all(dim(tooltipData) == dim(numData)))
       stop("numData and tooltipData must have the same dimension")
     rownames(tooltipData) <- rownames(numData)
-  }
-  nodes <- getNodeSet(svg, paste("//", what, "[@", geneAttribute, "]", sep=""))
-  getGeneColors <- function(gene) {
-    computeExprColors(numData[gene,], col=col, NA.color=NA.color, a=colrange[[1]], b=colrange[[2]])
-  }
-  getGeneValues <- function(gene) {
-    X <- as.character(numData[gene,])
-    X[is.na(X)] <- "0"
-    return(X)
   }
   if (is.null(annotation)) {
     annotFunction <- function(x) { list(name=x) }
@@ -193,37 +211,33 @@ mapDataSVG <- function(svg, numData, tooltipData=numData,
   } else {
     stop("Invalid type for annotation")
   }
-  addquotes <- function(v) {
-    f <- function(x) {
-      if (x == "null") {
-        "null"
-      } else {
-        x <- gsub("\\\\", "\\\\\\\\", x)
-        x <- gsub('"', '\\\\"', x)
-        x <- gsub("'", "\\\\'", x)
-        paste("'", x, "'", sep="")
+
+  ## -- init.
+  nodes <- getNodeSet(svg, paste("//", what, "[@", geneAttribute, "]", sep=""))
+  addToolTip <- if (is.null(tooltipData))
+    function(node, ...) { return(node) }
+  else
+    function(node, gene, geneColors) {
+      displayedFoldChanges <- tooltipData[gene,]
+      displayedFoldChanges <- as.character(displayedFoldChanges)
+      displayedFoldChanges[is.na(displayedFoldChanges)] <- "NA"
+      annot <- annotFunction(gene)
+      jsargs <- c()
+      jsargs[[1]] <- "evt"
+      jsargs[[2]] <- addquotes(if (!is.null(annot) && !is.null(annot$name)) annot$name else "null")
+      jsargs[[3]] <- addquotes(if (!is.null(annot) && !is.null(annot$description)) annot$description else "null")
+      jsargs[[4]] <- paste("new Array(", paste(addquotes(displayedFoldChanges), collapse=","), ")", sep="")
+      jsargs[[5]] <- paste("new Array(", paste(addquotes(geneColors), collapse=","), ")", sep="")
+      addJavaScriptCallBack(node, "onmouseover", paste("displayAnnotation(", paste(jsargs, collapse=", "), ")", sep=""))
+      addJavaScriptCallBack(node, "onmouseout", "hideAnnotation(evt)")
+      if (!is.null(annot) && !is.null(annot$url)) {
+        node <- addLinkSVG(node, annot$url)
       }
+      return(node)
     }
-    return(sapply(v, f))
-  }
-  addToolTip <- if (is.null(tooltipData)) function(node, ...) { return(node) } else function(node, gene, geneColors) {
-    displayedFoldChanges <- tooltipData[gene,]
-    displayedFoldChanges <- as.character(displayedFoldChanges)
-    displayedFoldChanges[is.na(displayedFoldChanges)] <- "NA"
-    annot <- annotFunction(gene)
-    jsargs <- c()
-    jsargs[[1]] <- "evt"
-    jsargs[[2]] <- addquotes(if (!is.null(annot) && !is.null(annot$name)) annot$name else "null")
-    jsargs[[3]] <- addquotes(if (!is.null(annot) && !is.null(annot$description)) annot$description else "null")
-    jsargs[[4]] <- paste("new Array(", paste(addquotes(displayedFoldChanges), collapse=","), ")", sep="")
-    jsargs[[5]] <- paste("new Array(", paste(addquotes(geneColors), collapse=","), ")", sep="")
-    addJavaScriptCallBack(node, "onmouseover", paste("displayAnnotation(", paste(jsargs, collapse=", "), ")", sep=""))
-    addJavaScriptCallBack(node, "onmouseout", "hideAnnotation(evt)")
-    if (!is.null(annot) && !is.null(annot$url)) {
-      node <- addLinkSVG(node, annot$url)
-    }
-    return(node)
-  }
+
+  ## F I L L I N G
+  ## ------------------------------------------------------------
   if (mode == "fill") {
     if (ncol(numData) < 2) {
       ## Simple color fill
@@ -286,7 +300,11 @@ mapDataSVG <- function(svg, numData, tooltipData=numData,
         }
       }
     }
-  } else if (mode == "stroke") {
+  }
+
+  ## S T R O K E
+  ## ------------------------------------------------------------
+  else if (mode == "stroke") {
     if (ncol(numData)>1) stop("This mode is not compatible with multiple conditions")
     for (node in nodes) {
       gene <- xmlGetAttr(node, geneAttribute)
@@ -296,20 +314,23 @@ mapDataSVG <- function(svg, numData, tooltipData=numData,
         node <- addToolTip(node, gene, geneColor)
       }
     }
-  } else if (mode == "pie") {
+  }
+  
+  ## P I E
+  ## ------------------------------------------------------------
+  else if (mode == "pie") {
     nconds <- ncol(numData)
     alphadeg <- 360/nconds
     alpharad <- 2*pi/nconds
     for (node in nodes) {
       gene <- xmlGetAttr(node, geneAttribute)
       if (gene %in% rownames(numData)) {
-        ##print(node)
         geneColors <- getGeneColors(gene)
-        attrs <- xmlAttrs(node, addNamespacePrefix=TRUE) # We need to make the difference between cx and sodipodi:cx
+        # We need to make the difference between cx and sodipodi:cx
+        attrs <- xmlAttrs(node, addNamespacePrefix=TRUE) 
         ok <- FALSE
         if (all(c("cx", "cy", "r") %in% names(attrs))) {
           # We have a genuine circle
-          ##cat("genuine circle\n")
           # Where is the circle center?
           cx <- as.numeric(attrs[["cx"]])
           cy <- as.numeric(attrs[["cy"]])
@@ -318,7 +339,6 @@ mapDataSVG <- function(svg, numData, tooltipData=numData,
           ok <- TRUE
         } else if (all(c("sodipodi:cx", "sodipodi:cy", "sodipodi:rx") %in% names(attrs))) {
           # We have an Inkscape circle
-          ##cat("inkscape circle\n")
           # Inkscape uses paths for circle but adds non-standard attributes to remember center/radius.
           # Where is the circle center?
           cx <- as.numeric(attrs[["sodipodi:cx"]])
@@ -401,7 +421,11 @@ mapDataSVG <- function(svg, numData, tooltipData=numData,
         }
       }
     }
-  } else if (mode == "tooltip-only") {
+  }
+
+  ## T O O L T I P  -  O N L Y
+  ## ------------------------------------------------------------
+  else if (mode == "tooltip-only") {
     for (node in nodes) {
       gene <- xmlGetAttr(node, geneAttribute)
       if (gene %in% rownames(numData)) {
@@ -409,7 +433,11 @@ mapDataSVG <- function(svg, numData, tooltipData=numData,
         node <- addToolTip(node, gene, geneColor)
       }
     }
-  } else if (mode == "fill-opacity") {
+  }
+
+  ## F I L L   O P A C I T Y
+  ## ------------------------------------------------------------
+  else if (mode == "fill-opacity") {
     if (ncol(numData)>1) stop("This mode is not compatible with multiple conditions")
     for (node in nodes) {
       gene <- xmlGetAttr(node, geneAttribute)
@@ -418,7 +446,11 @@ mapDataSVG <- function(svg, numData, tooltipData=numData,
         setStyleSVG(node, "fill-opacity", geneValue)
       }
     }
-  } else if (mode == "stroke-opacity") {
+  }
+  
+  ## S T R O K E   O P A C I T Y
+  ## ------------------------------------------------------------
+  else if (mode == "stroke-opacity") {
     if (ncol(numData)>1) stop("This mode is not compatible with multiple conditions")
     for (node in nodes) {
       gene <- xmlGetAttr(node, geneAttribute)
@@ -427,7 +459,11 @@ mapDataSVG <- function(svg, numData, tooltipData=numData,
         setStyleSVG(node, "stroke-opacity", geneValue)
       }
     }
-  } else if (mode == "stroke-width") {
+  }
+
+  ## S T R O K E   W I D T H
+  ## ------------------------------------------------------------
+  else if (mode == "stroke-width") {
     if (ncol(numData)>1) stop("This mode is not compatible with multiple conditions")
     for (node in nodes) {
       gene <- xmlGetAttr(node, geneAttribute)
@@ -436,7 +472,11 @@ mapDataSVG <- function(svg, numData, tooltipData=numData,
         setStyleSVG(node, "stroke-width", geneValue)
       }
     }
-  } else if (mode == "partial-fill") {
+  }
+  
+  ## P A R T I A L   F I L L
+  ## ------------------------------------------------------------
+  else if (mode == "partial-fill") {
     if (is.null(fillAngle))
       fillAngle <- -pi / 2
     if (ncol(numData)>1) stop("This mode is not compatible with multiple conditions")
@@ -458,10 +498,18 @@ mapDataSVG <- function(svg, numData, tooltipData=numData,
         gradient.id <- paste(getAttributeSVG(node, "id"), "-gradient", sep="")
         mask.id <- paste(getAttributeSVG(node, "id"), "-mask", sep="")
         gradient.children <- list()
-        gradient.children[[1]] <- newXMLNode("stop", attrs=list(offset=0, style=paste("stop-color:white;stop-opacity:1", sep="")))
-        gradient.children[[2]] <- newXMLNode("stop", attrs=list(offset=geneValue, style=paste("stop-color:white;stop-opacity:1", sep="")))
-        gradient.children[[3]] <- newXMLNode("stop", attrs=list(offset=geneValue, style=paste("stop-color:white;stop-opacity:0", sep="")))
-        gradient.children[[4]] <- newXMLNode("stop", attrs=list(offset=1, style=paste("stop-color:white;stop-opacity:0", sep="")))
+        gradient.children[[1]] <- newXMLNode("stop",
+                                             attrs=list(offset=0,
+                                               style=paste("stop-color:white;stop-opacity:1", sep="")))
+        gradient.children[[2]] <- newXMLNode("stop",
+                                             attrs=list(offset=geneValue,
+                                               style=paste("stop-color:white;stop-opacity:1", sep="")))
+        gradient.children[[3]] <- newXMLNode("stop",
+                                             attrs=list(offset=geneValue,
+                                               style=paste("stop-color:white;stop-opacity:0", sep="")))
+        gradient.children[[4]] <- newXMLNode("stop",
+                                             attrs=list(offset=1,
+                                               style=paste("stop-color:white;stop-opacity:0", sep="")))
         x <- cos(fillAngle)
         y <- sin(fillAngle)
         if (x < 0) {
@@ -482,7 +530,9 @@ mapDataSVG <- function(svg, numData, tooltipData=numData,
         x2 <- paste(round(x2*100), "%", sep="")
         y1 <- paste(round(y1*100), "%", sep="")
         y2 <- paste(round(y2*100), "%", sep="")
-        gradient <- newXMLNode("linearGradient", attrs=list(id=gradient.id, x1=x1, x2=x2, y1=y1, y2=y2), .children=gradient.children)
+        gradient <- newXMLNode("linearGradient",
+                               attrs=list(id=gradient.id, x1=x1, x2=x2, y1=y1, y2=y2),
+                               .children=gradient.children)
         addChildren(defs, kids=list(gradient))
         
         # make mask
@@ -509,7 +559,63 @@ mapDataSVG <- function(svg, numData, tooltipData=numData,
         }
       }
     }
-  } else {
+  }
+
+  ## R O T A T E
+  ## ------------------------------------------------------------
+  else if (mode == "rotate") {
+    if(is.null(angleRange))
+      angleRange <- c(0, 360)  # angleRange(2) > angleRange(1) => clockwise
+
+    ## init. Bbox java object to compute bounding-box
+    if(length(nodes) > 0) {
+      f = tempfile("svg", fileext="svg")
+      saveSVG(svg,f,add.script=FALSE)
+      BBox = new(J("cea/dsv/ibitecs/org/BBox"))
+      BBox$setFilename(f)
+      BBox$init()
+    }
+    for(node in nodes) {
+      id <- xmlGetAttr(node, geneAttribute)
+      if(id %in% rownames(numData)) {
+        xid <- xmlGetAttr(node,"id")
+        bbox <- BBox$getBBox(paste("//*[@id='",xid,"']",sep=""))
+        if(is.null(bbox)) {
+          warning(paste("Failed to compute Bounding-Box for id:",id))
+          warning(paste("-- Temporary file:",f))
+          warning(paste("-- XPath: ",paste("//*[@id='",xid,"']",sep="")))
+        }
+        else {
+          assign("bbox", bbox, envir=.GlobalEnv)
+          ## get inkscape rotation center modifications if any..
+          rcx = xmlGetAttr(node, "inkscape:transform-center-x",
+            default=0.0, converter=as.double,
+            namespaceDefinition=c("inkscape","http://www.inkscape.org/namespaces/inkscape"))
+          rcy = xmlGetAttr(node, "inkscape:transform-center-y",
+            default=0.0, converter=as.double,
+            namespaceDefinition=c("inkscape","http://www.inkscape.org/namespaces/inkscape"))
+          cx = bbox[1] + bbox[3]/2 + rcx
+          cy = bbox[2] + bbox[4]/2 + rcy
+          transform <- xmlGetAttr(node, "transform")
+          if(is.null(transform)) transform=""
+          angle = numData[id,] *(angleRange[2] - angleRange[1]) + angleRange[1]
+          rotate = paste("rotate(",angle,",",cx,",",cy,")",sep="")
+          if(transform=="")  
+            transform <- rotate
+          else
+            transform <- paste(transform,rotate)
+          setAttributeSVG(node,"transform",transform)
+        }
+      }
+    }
+    if(length(nodes) > 0) {
+      unlink(f)
+    }
+  }
+
+  ## I N V A L I D   M O D E
+  ## ------------------------------------------------------------
+  else {
     stop(paste("Invalid mode:", mode))
   }
   return(invisible())
