@@ -1,0 +1,18 @@
+<inkscape-extension>
+  <_name>Erlenmeyer</_name>
+  <id>org.ibitecs.dsv.cea.Erlenmeyer</id>
+  <dependency type="executable" location="extensions">erlenmeyer.py</dependency>
+  <dependency type="executable" location="extensions">inkex.py</dependency>
+ <param name="label" type="string"  _gui-text="Erlenmeyer filling label">erlenmeyer</param>
+ <param name="volume" type="int" min="500" max="5000" max_length="4" _gui-text="Erlenmeyer Volume">500</param>
+ <param name="volume_unit" type="string" _gui-text="Volume Unit">ml</param>
+  <effect>
+    <object-type>all</object-type>
+    <effects-menu>
+       <submenu _name="Gauges"/>
+    </effects-menu>
+  </effect>
+  <script>
+    <command reldir="extensions" interpreter="python">erlenmeyer.py</command>
+  </script>
+</inkscape-extension>

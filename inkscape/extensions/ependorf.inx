@@ -1,0 +1,16 @@
+<inkscape-extension>
+  <_name>Ependorf</_name>
+  <id>org.ibitecs.dsv.cea.Ependorf</id>
+  <dependency type="executable" location="extensions">ependorf.py</dependency>
+  <dependency type="executable" location="extensions">inkex.py</dependency>
+ <param name="label" type="string"  _gui-text="Ependorf filling label">ependorf</param>
+  <effect>
+    <object-type>all</object-type>
+    <effects-menu>
+       <submenu _name="Gauges"/>
+    </effects-menu>
+  </effect>
+  <script>
+    <command reldir="extensions" interpreter="python">ependorf.py</command>
+  </script>
+</inkscape-extension>

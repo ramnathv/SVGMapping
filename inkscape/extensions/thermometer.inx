@@ -1,0 +1,20 @@
+<inkscape-extension>
+  <_name>Thermometer</_name>
+  <id>org.ibitecs.dsv.cea.Thermometer</id>
+  <dependency type="executable" location="extensions">thermometer.py</dependency>
+  <dependency type="executable" location="extensions">inkex.py</dependency>
+ <param name="label" type="string"  _gui-text="Thermometer filling label">thermometer</param>
+ <param name="grad_labels" type="boolean" _gui-text="Graduation Labels ?">TRUE</param>
+ <param name="grad_min" type="float" min="-100000" max="100000" max_length="10" precision="2" _gui-text="Minimum graduation value">0.00</param>
+ <param name="grad_max" type="float" min="-100000" max="100000" max_length="10" precision="2" _gui-text="Maximum graduation value">100.00</param>
+ <param name="grad_unit" type="string" _gui-text="Graduation Units"></param>
+  <effect>
+    <object-type>all</object-type>
+    <effects-menu>
+       <submenu _name="Gauges"/>
+    </effects-menu>
+  </effect>
+  <script>
+    <command reldir="extensions" interpreter="python">thermometer.py</command>
+  </script>
+</inkscape-extension>
