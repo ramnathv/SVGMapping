@@ -595,7 +595,7 @@ mapDataSVG <- function(svg, numData, tooltipData=numData,
             default=0.0, converter=as.double,
             namespaceDefinition=c("inkscape","http://www.inkscape.org/namespaces/inkscape"))
           cx = bbox[1] + bbox[3]/2 + rcx
-          cy = bbox[2] + bbox[4]/2 + rcy
+          cy = bbox[2] + bbox[4]/2 - rcy # because inkscape reverse y-axis origin
           transform <- xmlGetAttr(node, "transform")
           if(is.null(transform)) transform=""
           angle = numData[id,] *(angleRange[2] - angleRange[1]) + angleRange[1]
