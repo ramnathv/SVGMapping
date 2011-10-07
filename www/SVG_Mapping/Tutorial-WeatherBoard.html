@@ -1,0 +1,221 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+
+
+<html xmlns="http://www.w3.org/1999/xhtml" xml:lang="fr" lang="fr">
+  <head><meta http-equiv="Content-Type" content="text/html; charset=UTF-8" />
+    
+    <meta name="Generator" content="iWeb 3.0.4" />
+    <meta name="iWeb-Build" content="local-build-20111007" />
+    <meta http-equiv="X-UA-Compatible" content="IE=EmulateIE7" />
+    <meta name="viewport" content="width=700" />
+    <title>Weather Board Tutorial</title>
+    <link rel="stylesheet" type="text/css" media="screen,print" href="Tutorial-WeatherBoard_files/Tutorial-WeatherBoard.css" />
+    <!--[if lt IE 8]><link rel='stylesheet' type='text/css' media='screen,print' href='Tutorial-WeatherBoard_files/Tutorial-WeatherBoardIE.css'/><![endif]-->
+    <!--[if gte IE 8]><link rel='stylesheet' type='text/css' media='screen,print' href='Media/IE8.css'/><![endif]-->
+    <style type="text/css">
+/*<![CDATA[*/
+	@import "Scripts/Widgets/HTMLRegion/Paste.css";
+/*]]>*/
+</style>
+    <script type="text/javascript" src="Scripts/iWebSite.js"></script>
+    <script type="text/javascript" src="Scripts/Widgets/SharedResources/WidgetCommon.js"></script>
+    <script type="text/javascript" src="Scripts/Widgets/Navbar/navbar.js"></script>
+    <script type="text/javascript" src="Scripts/iWebImage.js"></script>
+    <script type="text/javascript" src="Scripts/iWebMediaGrid.js"></script>
+    <script type="text/javascript" src="Scripts/Widgets/HTMLRegion/Paste.js"></script>
+    <script type="text/javascript" src="Tutorial-WeatherBoard_files/Tutorial-WeatherBoard.js"></script>
+  </head>
+  <body style="background: rgb(101, 101, 101); margin: 0pt; " onload="onPageLoad();" onunload="onPageUnload();">
+    <div style="text-align: center; ">
+      <div style="margin-bottom: 10px; margin-left: auto; margin-right: auto; margin-top: 10px; overflow: hidden; position: relative; word-wrap: break-word;  background: rgb(255, 255, 255); text-align: left; width: 700px; " id="body_content">
+        <div style="margin-left: 0px; position: relative; width: 700px; z-index: 0; " id="nav_layer">
+          <div style="height: 0px; line-height: 0px; " class="bumper"> </div>
+          <div class="com-apple-iweb-widget-navbar flowDefining" id="widget0" style="margin-left: 20px; margin-top: 0px; opacity: 1.00; position: relative; width: 660px; z-index: 1; ">
+    
+            <div id="widget0-navbar" class="navbar">
+
+      
+              <div id="widget0-bg" class="navbar-bg">
+
+        
+                <ul id="widget0-navbar-list" class="navbar-list">
+ <li></li> 
+</ul>
+                
+      
+</div>
+              
+    
+</div>
+          </div>
+          <script type="text/javascript"><!--//--><![CDATA[//><!--
+new NavBar('widget0', 'Scripts/Widgets/Navbar', 'Scripts/Widgets/SharedResources', '.', {"path-to-root": "", "navbar-css": ".navbar {\n\tfont-family: 'Helvetica Neue', Arial, sans-serif;\n\tfont-size: .8em;\n\tcolor: #666666;\n\tline-height: 30px;\n\tborder-bottom: 3px solid #ccc;\n}\n\n.navbar-bg {\n\ttext-align: right;}\n\n.navbar-bg ul {\n\tlist-style: none;\n\tmargin: 0px;\n\tpadding: 0px;\n}\n\n\nli {\n\tlist-style-type: none;\n\tdisplay: inline;\n\tpadding: 0px 5px 0px 0px;\n}\n\n\nli a {\n\ttext-decoration: none;\n\tpadding: 10px;\n\tcolor: #666666;\n\tfont-weight: bold;\n}\n\nli a:visited {\n\ttext-decoration: none;\n\tpadding: 10px;\n\tcolor: #666666;\n\tfont-weight: bold;\n}\n\nli a:hover\r{\r\n \tcolor: #999999;\n\ttext-decoration: none;\r}\n\n\nli.current-page a\r{\r\t color: #66ABC5;\n\ttext-decoration: none;\r}\n", "current-page-GUID": "4F97F54D-6AB1-4FE0-B27D-0FAB67A5C296", "isCollectionPage": "NO"});
+//--><!]]></script>
+          <div style="clear: both; height: 0px; line-height: 0px; " class="spacer"> </div>
+        </div>
+        <div style="height: 75px; margin-left: 0px; position: relative; width: 700px; z-index: 10; " id="header_layer">
+          <div style="height: 0px; line-height: 0px; " class="bumper"> </div>
+          <div id="id1" style="height: 43px; left: 20px; position: absolute; top: 20px; width: 515px; z-index: 1; " class="style_SkipStroke shape-with-text">
+            <div class="text-content Normal_External_515_43" style="padding: 0px; ">
+              <div class="Normal">
+                <p style="padding-bottom: 0pt; padding-top: 0pt; " class="Header">Weather Board Tutorial</p>
+              </div>
+            </div>
+          </div>
+        </div>
+        <div style="margin-left: 0px; position: relative; width: 700px; z-index: 5; " id="body_layer">
+          <div style="height: 0px; line-height: 0px; " class="bumper"> </div>
+          <div id="id2" style="height: 106px; left: 20px; position: absolute; top: 12px; width: 659px; z-index: 1; " class="style_SkipStroke_1 shape-with-text">
+            <div class="text-content Normal_External_659_106" style="padding: 0px; ">
+              <div class="Normal">
+                <p style="padding-top: 0pt; " class="paragraph_style">In this tutorial we will create a 'weather board' template and use some R code with SVGMapping to display weather informations retrieve from the <a onclick="window.open(this.href); return false;" title="http://www.wunderground.com" href="http://www.wunderground.com" onkeypress="window.open(this.href); return false;">wunderground</a> network of personnal weather station.<br /></p>
+                <p class="paragraph_style">This tutorial will be split in two parts. In the first one we will see how to design a template using Inkscape. And in the second part we will use <span class="style">Rstudio</span> to process the template.<br /></p>
+                <p style="padding-bottom: 0pt; " class="paragraph_style">In the end we will obtained the following image</p>
+              </div>
+            </div>
+          </div>
+          <div class="com-apple-iweb-widget-HTMLRegion" id="widget1" style="height: 338px; left: 50px; opacity: 1.00; position: absolute; top: 1086px; width: 600px; z-index: 1; ">
+            <script type="text/javascript"><!--//--><![CDATA[//><!--
+    var widget1_htmlMarkupURL = ".//Tutorial-WeatherBoard_files/widget1_markup.html";
+//--><!]]></script>
+            <div id="widget1-htmlRegion" class="html_region_widget"></div>
+          </div>
+          <script type="text/javascript"><!--//--><![CDATA[//><!--
+new Paste('widget1', 'Scripts/Widgets/HTMLRegion', 'Scripts/Widgets/SharedResources', '.', {"emptyLook": false});
+//--><!]]></script>
+          <div id="id3" style="height: 22px; left: 35px; position: absolute; top: 503px; width: 515px; z-index: 1; " class="style_SkipStroke_1 shape-with-text">
+            <div class="text-content Normal_External_515_22" style="padding: 0px; ">
+              <div class="Normal">
+                <p style="padding-bottom: 0pt; padding-top: 0pt; " class="paragraph_style_1">Materials</p>
+              </div>
+            </div>
+          </div>
+          
+
+
+          <div style="height: 321px; width: 465px;  height: 321px; left: 117px; position: absolute; top: 149px; width: 465px; z-index: 1; " class="tinyText style_SkipStroke_2 shadow_0">
+            <img src="Tutorial-WeatherBoard_files/Capture%20decran%202011-10-07%20a%2011.45.03.jpg" alt="" style="border: none; height: 322px; width: 465px; " />
+          </div>
+          
+
+
+          <div id="id4" style="height: 22px; left: 35px; position: absolute; top: 953px; width: 515px; z-index: 1; " class="style_SkipStroke_1 shape-with-text">
+            <div class="text-content Normal_External_515_22" style="padding: 0px; ">
+              <div class="Normal">
+                <p style="padding-bottom: 0pt; padding-top: 0pt; " class="paragraph_style_1">Part 1 : Template DESIGN</p>
+              </div>
+            </div>
+          </div>
+          
+
+
+          <div id="id5" style="height: 385px; left: 20px; position: absolute; top: 543px; width: 659px; z-index: 1; " class="style_SkipStroke_3 shape-with-text">
+            <div class="text-content graphic_textbox_layout_style_default_External_659_385" style="padding: 0px; ">
+              <div class="graphic_textbox_layout_style_default">
+                <p style="padding-top: 0pt; " class="paragraph_style_2">To complete this tutorial you will need to load and install the <span class="style">digital dream</span> font and a set of extensions for Inkscape. These extensions allow to render various gauges.<br /></p>
+                <p class="paragraph_style_2"><br /></p>
+                <ol>
+                  <li style="line-height: 16px; padding-left: 0px; text-indent: 0px; " class="full-width">
+                    <p style="text-indent: 0px; " class="paragraph_style_3"><span style="font-size: 14px; " class="Puce">•</span> The Digital Dream font is available here: <a title="http://www.1001freefonts.com/DigitalDream.php" href="http://www.1001freefonts.com/DigitalDream.php">http://www.1001freefonts.com/DigitalDream.php</a><br /></p>
+                  </li>
+                  <li style="line-height: 16px; padding-left: 0px; text-indent: 0px; " class="full-width">
+                    <p style="text-indent: 0px; " class="paragraph_style_3"><span style="font-size: 14px; " class="Puce">•</span> Gauges Inkscape Extensions : <a title="http://svgmapping.r-forge.r-project.org/SVG_Mapping/Tutorial-WeatherBoard_files/gauges.zip" href="http://svgmapping.r-forge.r-project.org/SVG_Mapping/Tutorial-WeatherBoard_files/gauges.zip">gauges.zip</a> or the <a title="http://svgmapping.r-forge.r-project.org/SVG_Mapping/Tutorial-WeatherBoard_files/Inkscape\ Gauges\ Extension.pkg" href="http://svgmapping.r-forge.r-project.org/SVG_Mapping/Tutorial-WeatherBoard_files/Inkscape%5C%20Gauges%5C%20Extension.pkg">Inkscape Gauges Extension</a> package for Mac OS/X<br /></p>
+                  </li>
+                </ol>
+                <p class="paragraph_style_2"><br /></p>
+                <p class="paragraph_style_4">Linux:<br /></p>
+                <p class="paragraph_style_2">After unziping this file, you just have to copy the content (<span class="style_1">*.inx</span> and <span class="style_1">*.py</span> files) within the <span class="style">extensions</span> directory of Inkscape. <br /></p>
+                <p class="paragraph_style_2"><br /></p>
+                <p class="paragraph_style_2">On standard installation it will be  the <span class="style_2">'&lt;path_to_inkscape&gt;/extensions'</span> or <span class="style_2">'~/.config/inkscape/extensions'</span> directory. On Linux you will probably have to make the python script executable first if you haven't done this yet. This is usually done by the usual command (or in your preferred file manager):<br /></p>
+                <p class="paragraph_style_2"><br /></p>
+                <p class="paragraph_style_5"><span class="style_3">$</span> chmod a+x *.py<br /></p>
+                <p class="paragraph_style_2"><br /></p>
+                <p class="paragraph_style_6"><span class="style">Windows:</span> <br /></p>
+                <p class="paragraph_style_2">soon.. (maybe detailed on the insckape wiki). <br /></p>
+                <p class="paragraph_style_2"><br /></p>
+                <p class="paragraph_style_4">R Packages:<br /></p>
+                <p style="padding-bottom: 0pt; " class="paragraph_style_2">You will also need the following packages : <span class="style">splines</span>, <span class="style">ggplot2</span>, <span class="style">rJava</span>, <span class="style">XML</span> and <span class="style">SVGMapping</span> &gt;1.4</p>
+              </div>
+            </div>
+          </div>
+          
+
+
+          <div id="id6" style="height: 100px; left: -118px; position: absolute; top: 0px; width: 100px; z-index: 1; " class="style_SkipStroke_3 shape-with-text">
+            <div class="text-content graphic_textbox_layout_style_default_External_100_100" style="padding: 0px; ">
+              <div class="graphic_textbox_layout_style_default">
+                <p style="padding-bottom: 0pt; padding-top: 0pt; " class="Free_Form"><a title="Tutorial-WeatherBoard_files/gauges.zip" href="Tutorial-WeatherBoard_files/gauges.zip">gauges.zip</a></p>
+              </div>
+            </div>
+          </div>
+          
+
+
+          <div id="id7" style="height: 100px; left: -100px; position: absolute; top: 543px; width: 100px; z-index: 1; " class="style_SkipStroke_3 shape-with-text">
+            <div class="text-content graphic_textbox_layout_style_default_External_100_100" style="padding: 0px; ">
+              <div class="graphic_textbox_layout_style_default">
+                <p style="padding-bottom: 0pt; padding-top: 0pt; " class="Free_Form"><a>Inkscape Gauges Extension.pkg</a></p>
+              </div>
+            </div>
+          </div>
+          
+
+
+          <div id="id8" style="height: 72px; left: 20px; position: absolute; top: 995px; width: 659px; z-index: 1; " class="style_SkipStroke_3 shape-with-text">
+            <div class="text-content graphic_textbox_layout_style_default_External_659_72" style="padding: 0px; ">
+              <div class="graphic_textbox_layout_style_default">
+                <p style="padding-bottom: 0pt; padding-top: 0pt; " class="paragraph_style_2">The first part is only dedicated to the creation of the weather template. Still it doesn't require any particular skill or drawing technic and could be easily reproduce. If you have a good internet connection you can see the HD version <a title="http://vimeo.com/30124242" href="http://vimeo.com/30124242">here</a>. If you want to obtained the already done template you can download it <a onclick="window.open(this.href); return false;" title="http://svgmapping.r-forge.r-project.org/SVG_Mapping/Tutorial-WeatherBoard_files/weather-board.svg" href="http://svgmapping.r-forge.r-project.org/SVG_Mapping/Tutorial-WeatherBoard_files/weather-board.svg" onkeypress="window.open(this.href); return false;">here</a>.</p>
+              </div>
+            </div>
+          </div>
+          
+
+
+          <div id="id9" style="height: 100px; left: -100px; position: absolute; top: 995px; width: 100px; z-index: 1; " class="style_SkipStroke_3 shape-with-text">
+            <div class="text-content graphic_textbox_layout_style_default_External_100_100" style="padding: 0px; ">
+              <div class="graphic_textbox_layout_style_default">
+                <p style="padding-bottom: 0pt; padding-top: 0pt; " class="Free_Form"><a title="Tutorial-WeatherBoard_files/weather-board.svg" href="Tutorial-WeatherBoard_files/weather-board.svg">weather-board.svg</a></p>
+              </div>
+            </div>
+          </div>
+          
+
+
+          <div id="id10" style="height: 22px; left: 35px; position: absolute; top: 1452px; width: 515px; z-index: 1; " class="style_SkipStroke_1 shape-with-text">
+            <div class="text-content Normal_External_515_22" style="padding: 0px; ">
+              <div class="Normal">
+                <p style="padding-bottom: 0pt; padding-top: 0pt; " class="paragraph_style_1">Part 2 : Template Processing</p>
+              </div>
+            </div>
+          </div>
+          
+
+
+          <div id="id11" style="height: 40px; left: 20px; position: absolute; top: 1491px; width: 659px; z-index: 1; " class="style_SkipStroke_3 shape-with-text">
+            <div class="text-content graphic_textbox_layout_style_default_External_659_40" style="padding: 0px; ">
+              <div class="graphic_textbox_layout_style_default">
+                <p style="padding-bottom: 0pt; padding-top: 0pt; " class="paragraph_style_2">The second part is dedicated to the processing of the weather board template using SVGMapping. If you have a good internet connection you can see the HD version <a title="http://vimeo.com/30124242" href="http://vimeo.com/30124242">here</a>.</p>
+              </div>
+            </div>
+          </div>
+          <div class="com-apple-iweb-widget-HTMLRegion" id="widget2" style="height: 338px; left: 50px; opacity: 1.00; position: absolute; top: 1549px; width: 600px; z-index: 1; ">
+            <script type="text/javascript"><!--//--><![CDATA[//><!--
+    var widget2_htmlMarkupURL = ".//Tutorial-WeatherBoard_files/widget2_markup.html";
+//--><!]]></script>
+            <div id="widget2-htmlRegion" class="html_region_widget"></div>
+          </div>
+          <script type="text/javascript"><!--//--><![CDATA[//><!--
+new Paste('widget2', 'Scripts/Widgets/HTMLRegion', 'Scripts/Widgets/SharedResources', '.', {"emptyLook": false});
+//--><!]]></script>
+          <div style="height: 1887px; line-height: 1887px; " class="spacer"> </div>
+        </div>
+        <div style="height: 75px; margin-left: 0px; position: relative; width: 700px; z-index: 15; " id="footer_layer">
+          <div style="height: 0px; line-height: 0px; " class="bumper"> </div>
+        </div>
+      </div>
+    </div>
+  </body>
+</html>
+
+
