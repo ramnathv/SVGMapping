@@ -1,3 +1,5 @@
+import("XML")
+import("rJava")
 export("microarrayColors")
 export("computeExprColors")
 export("loadSVG")

@@ -1,16 +1,11 @@
 \name{mapDataSVG}
 \alias{mapDataSVG}
-\title{Maps microarray-like data to an SVG file}
+\title{Map experimental data to an SVG template file}
 \description{
-This is the main function of SVGMapping. It allows you to map microarray data (or any other type of data) to an SVG file.
-Typically, you can create an SVG file showing a cell mechanism with genes as full circles, and you want the circles to be
-coloured according to the gene differential expression (red for induced and green for repressed, for example).
-This function allows you to do that, as well as other variants designed with the same idea in mind (see options below).
-For example, the circles can be replaced by pie charts showing different experiments or different time values.
-It "finds" the SVG objects that represent the genes by using the value of an attribute, by default it is designed
-to use the Inkscape "label" field, but this can be changed to any other SVG attribute you want.
-This function also allows you to add tooltips (JavaScript-based) showing both the fold change and gene function (for example).
-This function can be run several times on the same SVG data to add different information.
+This is the main function of SVGMapping. It allows you to map data to an SVG file.
+Typically, you create an SVG template file (see details) and use this function 
+to modify attributes of selected shapes (\emph{ie} colors, filling, stroke, 
+opacity) given a set of experimental values. 
 }
 \usage{
 mapDataSVG(svg, numData, tooltipData=numData,
@@ -19,34 +14,43 @@ mapDataSVG(svg, numData, tooltipData=numData,
            col=microarrayColors, NA.color="#999999", colrange=c(-2,2),
            annotation=NULL,
            fillAngle=NULL, pieStartAngle=NULL, pieClockwise=TRUE,
-           animations=TRUE)
+           angleRange=NULL, animations=TRUE)
 }
 \arguments{
-\item{svg}{SVG data (an \code{XMLInternalDocument}). The variable will be modified in place.}
-\item{numData}{A numeric vector or matrix with genes (character) as rows.
+\item{svg}{An SVG template stored as an \code{XMLInternalDocument} (see \code{\link{xmlTreeParse}}). The template will be modified in place and must be used for outputs.}
+\item{numData}{A numeric vector or matrix with mapped names (character) as rows.
 Depending on the mode, the matrix may or may not have several columns (to display several experiments).}
-\item{tooltipData}{A vector/matrix with the same shape as numData, but containing the values to be displayed in
-the JavaScript-based tooltip window. If you don't want a tooltip window, set this to NULL.
-For example, this allows you to map log-ratios to the color range, but display fold changes.
-Note that this argument is only used if \code{mode} is a about coloring (ie. is one of "fill", "stroke", "pie", "tooltip-only"),
-because we need to compute a color for background in the tooltip window.}
-\item{mode}{What you want this function to do.
+\item{tooltipData}{A vector/matrix similar to numData, but containing the values to be displayed in
+the JavaScript-based tooltip window. If you don't want a tooltip window, set this to NULL.}
+\item{mode}{Describe the type of mapping operation to perform:
   \itemize{
-  \item{Objects can be colored with "fill" and "stroke" (depending on what to color).
-  The colors will be computed by mapping the \code{colrange} (vector with two values) to the colors provided in \code{col}.
-  For NA values, \code{NA.color} will be used. The color format is #RRGGBB with hex values.
-  The default behaviour is to use a gradient where dark green is -2,
-  green is -1, white is 0, red is 1 and dark red is 2 (it is meant to be used for log-ratios from two-color microarrays).}
-  \item{If you only want a tooltip window use "tooltip-only".}
-  \item{It is also possible to display pie charts (set to "pie") that show different conditions (columns in \code{numData}),
-  in which case the SVG elements with the labels are expected to be circles or Inkscape-pseudo-circles
-  (paths with sodipodi:cx/cy/rx attributes).}
-  \item{An alternative to pie charts for multi-experiment mode is to fill objects with several color stripes.
-  If you want to do that, use "fill" with a multi-column matrix for \code{numData}.}
-  \item{The "partial-fill" mode makes it possible to display partially filled flasks where the liquid level is
-  the numeric data in \code{numData}. This mode works by creating an SVG mask.}
-  \item{The last modes are "fill-opacity", "stroke-opacity" and "stroke-width" that set the attribute their name says.
-  For these modes, the values in \code{numData} are simply assumed to be the value to set the SVG attribute to.}
+  
+  \item{\code{fill} and \code{stroke}: set the \emph{filling} and \emph{outline} shape colors. 
+  First we performed a linear mapping between experimental values and the color range given in \code{colrange} 
+  (see below). Then the mapping value is used to select the colors (in hex. #RRGGBB format) provided by the \code{col} parameter. 
+  For \code{NA} values the special \code{NA.color} is used. 
+  }
+  
+  \item{\code{pie}: Display \code{numData} values as pie charts (set to "pie"). 
+  Slice sizes are computed using values in each columns of \code{numData}).}
+  
+  \item{\code{partial-fill}: Allows to display the fill color (or gradient) on a portion of a shape (eg. simulate the filling of flasks). 
+  The filling ratio is a value in the range [0-1]. This mode depends on the \code{fillAngle} parameter.}
+  
+  \item{\code{fill-opacity}: Set the opacity level of the filling color. 
+  In this case values of \code{numData} are expected to be in the range [0-1].}
+  
+  \item{\code{stroke-opacity}: Set the opacity level of the stroke color. 
+  In this case values of \code{numData} are expected to be in the range [0-1].}
+  
+  \item{\code{stroke-width}: Set the stroke width of a shape. 
+  In this case values of \code{numData} are expected to be valid SVG width.}
+  
+  \item{\code{rotate}: Rotate a shape or a group to a given angle. The rotation angle value in \code{numData} are given as proportions of the full rotation range (\code{angleRange} parameter).}
+  
+  \item{\code{tooltip-only}: add a tooltip javascript window (on mouseover event), 
+  using values in the \code{tooltipData} and \code{annotation} parameters (see the detail section), to shapes.}
+  
   }
 }
 \item{what}{The type of SVG nodes to apply the data to, for example "svg:path". By default any type of SVG element.}
@@ -65,11 +69,50 @@ For more than two, the circle works like a clock (starts at 12 o'clock and goes 
 therefore the angle is -pi/2.}
 \item{pieClockwise}{The circular direction of the pie (pie mode only). Set to TRUE for clockwise (the default) or FALSE
 for anticlockwise (like in trigonometry).}
+\item{angleRange}{Should be a vector with two values, \bold{min} and \bold{max}. When using the \emph{rorate} mode, specify the minimum and maximum angle of the rotation.}
 \item{animations}{Whether or not to add JavaScript animations.}
 }
+\details{
+
+This package has been firstly designed to process metabolomic pathways. For example, consider a SVG template document showing a given cell mechanism with genes depicted as full circles. Then, you want these circles to be
+coloured according to the differential gene expression level (\emph{eg.} red/grenn for the induced/repressed subsets).
+This function allows you to do that, as well as other variants designed with the same picture in mind (see options below).
+For example, circles can be replaced by pie charts showing different experiments or different kinetic values.
+It "finds" the SVG objects that depict genes by using the value of a given attribute. Since we are mostly using Inkscape to 
+sketch our template by default we are searching in the Inkscape "label" attribute field. Nevertheless this can be changed to any other SVG attribute you want (thus you are not limited to Inkscape based templates). Futhermore, this function also allows you to add tooltips (JavaScript-based) showing additional data such as the experimental values, gene annoations (\emph{eg} gene function.
+
+Although this function was originnaly created to process microarray data with gene labels 
+in mind, it can be applied to any sort of numeric data, in which case "genes" 
+are to be understood as the data you want to display.
+
+%% FILL/STROKE : 
+%%The default behaviour is to use a gradient where dark green is -2,
+%%  green is -1, white is 0, red is 1 and dark red is 2 (it is meant to be used for log-ratios from two-color microarrays).
+%%
+%%TOOLTIP
+%%* For example, this allows you to map log-ratios to the color range, but display fold changes.
+%%
+%%* Note that this argument is only used if \code{mode} is a about coloring (ie. is one of "fill", "stroke", "pie", "tooltip-only"),
+%%because we need to compute a color for background in the tooltip window.
+%%
+%%* Explain the role of tooltipData / annotation...
+%%
+%%PIE
+%%
+%%* in which case the SVG elements with the labels are expected to be circles or Inkscape-pseudo-circles
+%%  (paths with sodipodi:cx/cy/rx attributes).
+%%  
+%%* An alternative to pie charts for multi-experiment mode is to fill objects with several color stripes.
+%%  If you want to do that, use "fill" with a multi-column matrix for \code{numData}.
+%%
+%%ROTATE:
+
+}
 \note{
-  Although this function was created to display microarray data with gene labels in mind, it can be applied
-  to any sort of numeric data, in which case "genes" are to be understood as the data you want to display.
+This function can be run several times on the same SVG data to add different information. 
+
+After all your processing are done (including saving the document), don't foget to free the memory using the \code{\link{free}()} function on your modified template.
+
 }
 \examples{
 # Import yeast gene annotations (included in SVGMapping)
@@ -106,7 +149,8 @@ saveSVG(mysvg, file="output4.svg")
 }
 \seealso{
   \itemize{
-    \item{\code{\link{loadSVG}} to load your SVG file (to do before)}
+    \item{\code{\link{loadSVG}} to load your SVG template file (to do before)}
+    \item{\code{\link{showSVG}} to display the SVG template (possibly modified) in your navigator}
     \item{\code{\link{saveSVG}} to save the produced SVG file (when you have finished with calls to \code{mapDataSVG}}
   }
 }

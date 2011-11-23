@@ -1,0 +1,7 @@
+SVGMApping 1.41
+===============
+
+ * Fix: definition duplication in the DTD when using the XML package linked with
+   libxml2 rel. < 2.6.32
+
+ * Update/Cleanup man pages

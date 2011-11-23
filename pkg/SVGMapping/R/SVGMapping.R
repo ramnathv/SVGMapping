@@ -53,6 +53,8 @@ setAttributeSVG <- function(node, attname, attval) {
   ## Namespace prefix is important to not replace the value of an attribute X by the value of something:X when both are present
   attrs <- xmlAttrs(node, addNamespacePrefix=TRUE)
   attrs[[attname]] <- attval
+  ## fix for libxml2 rel. < 2.6.3x
+  if(is.null(xmlParent(node))) removeAttributes(node) 
   xmlAttrs(node, suppressNamespaceWarning=TRUE) <- attrs
   return(invisible())
 }
